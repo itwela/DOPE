@@ -52,8 +52,6 @@ export interface WeatherContextType {
   setWeatherData: React.Dispatch<React.SetStateAction<WeatherRecord[]>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  message: string;
-  setMessage: React.Dispatch<React.SetStateAction<string>>;
   forecastData: ApiResponse<OpenMeteoResponse> | null;
   setForecastData: React.Dispatch<React.SetStateAction<ApiResponse<OpenMeteoResponse> | null>>;
   forecastLoading: boolean;
