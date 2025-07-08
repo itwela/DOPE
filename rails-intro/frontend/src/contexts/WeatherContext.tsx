@@ -6,6 +6,7 @@ import {
   OpenMeteoResponse, 
   ApiResponse 
 } from '../types/weather';
+import { useToastMessage } from './ToastMessageContext';
 
 const WeatherContext = createContext<WeatherContextType | null>(null);
 
@@ -17,7 +18,7 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
   // Weather data management (CRUD operations)
   const [weatherData, setWeatherData] = useState<WeatherRecord[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
+  const { setToastMessage } = useToastMessage();
 
   // Open-Meteo weather forecast data
   const [forecastData, setForecastData] = useState<ApiResponse<OpenMeteoResponse> | null>(null);
@@ -37,9 +38,9 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
       const response = await fetch('http://localhost:3000/api/v1/weather');
       const data: WeatherRecord[] = await response.json();
       setWeatherData(data);
-      setMessage('✅ Weather data loaded successfully!');
+      setToastMessage('✅ Weather data loaded successfully!');
     } catch (error) {
-      setMessage('❌ Error loading weather data: ' + (error as Error).message);
+      setToastMessage('❌ Error loading weather data: ' + (error as Error).message);
     }
     setLoading(false);
   };
@@ -51,9 +52,9 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
       const response = await fetch(`http://localhost:3000/api/v1/weather_forecast/current?latitude=${latitude}&longitude=${longitude}`);
       const data: ApiResponse<OpenMeteoResponse> = await response.json();
       setForecastData(data);
-      setMessage('✅ Open-Meteo weather data loaded successfully!');
+      setToastMessage('✅ Open-Meteo weather data loaded successfully!');
     } catch (error) {
-      setMessage('❌ Error loading Open-Meteo weather: ' + (error as Error).message);
+      setToastMessage('❌ Error loading Open-Meteo weather: ' + (error as Error).message);
     }
     setForecastLoading(false);
   };
@@ -61,7 +62,7 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
   // Create new weather - local from Rails API Postgres DB (weather table)
   const createWeather = async (): Promise<void> => {
     if (!formData.city || !formData.temperature || !formData.condition) {
-      setMessage('❌ Please fill in all fields');
+      setToastMessage('❌ Please fill in all fields');
       return;
     }
 
@@ -75,11 +76,11 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
         body: JSON.stringify({ weather: formData }),
       });
       const result: ApiResponse<WeatherRecord> = await response.json();
-      setMessage('✅ ' + (result.message || 'Weather created successfully!'));
+      setToastMessage('✅ ' + (result.message || 'Weather created successfully!'));
       setFormData({ city: '', temperature: '', condition: '' });
       loadWeatherData(); // Reload the list
     } catch (error) {
-      setMessage('❌ Error creating weather: ' + (error as Error).message);
+      setToastMessage('❌ Error creating weather: ' + (error as Error).message);
     }
     setLoading(false);
   };
@@ -92,10 +93,10 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
         method: 'DELETE',
       });
       const result: ApiResponse<WeatherRecord> = await response.json();
-      setMessage('✅ ' + (result.message || 'Weather deleted successfully!'));
+      setToastMessage('✅ ' + (result.message || 'Weather deleted successfully!'));
       loadWeatherData(); // Reload the list
     } catch (error) {
-      setMessage('❌ Error deleting weather: ' + (error as Error).message);
+      setToastMessage('❌ Error deleting weather: ' + (error as Error).message);
     }
     setLoading(false);
   };
@@ -112,10 +113,10 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
         body: JSON.stringify({ weather: updatedData }),
       });
       const result: ApiResponse<WeatherRecord> = await response.json();
-      setMessage('✅ ' + (result.message || 'Weather updated successfully!'));
+      setToastMessage('✅ ' + (result.message || 'Weather updated successfully!'));
       loadWeatherData(); // Reload the list
     } catch (error) {
-      setMessage('❌ Error updating weather: ' + (error as Error).message);
+      setToastMessage('❌ Error updating weather: ' + (error as Error).message);
     }
     setLoading(false);
   };
@@ -130,7 +131,7 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
 
   // Clear message
   const clearMessage = (): void => {
-    setMessage('');
+    setToastMessage('');
   };
 
   // Clear forecast data
@@ -150,8 +151,6 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
       setWeatherData,
       loading,
       setLoading,
-      message,
-      setMessage,
       forecastData,
       setForecastData,
       forecastLoading,
