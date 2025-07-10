@@ -59,66 +59,19 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
     setForecastLoading(false);
   };
 
-  // Create new weather - local from Rails API Postgres DB (weather table)
+  // READ-ONLY: Create weather function removed - database is read-only
   const createWeather = async (): Promise<void> => {
-    if (!formData.city || !formData.temperature || !formData.condition) {
-      setToastMessage('❌ Please fill in all fields');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/weather', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ weather: formData }),
-      });
-      const result: ApiResponse<WeatherRecord> = await response.json();
-      setToastMessage('✅ ' + (result.message || 'Weather created successfully!'));
-      setFormData({ city: '', temperature: '', condition: '' });
-      loadWeatherData(); // Reload the list
-    } catch (error) {
-      setToastMessage('❌ Error creating weather: ' + (error as Error).message);
-    }
-    setLoading(false);
+    setToastMessage('❌ Cannot create weather - database is read-only');
   };
 
-  // Delete weather - local from Rails API Postgres DB (weather table)
+  // READ-ONLY: Delete weather function removed - database is read-only
   const deleteWeather = async (id: number): Promise<void> => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/api/v1/weather/${id}`, {
-        method: 'DELETE',
-      });
-      const result: ApiResponse<WeatherRecord> = await response.json();
-      setToastMessage('✅ ' + (result.message || 'Weather deleted successfully!'));
-      loadWeatherData(); // Reload the list
-    } catch (error) {
-      setToastMessage('❌ Error deleting weather: ' + (error as Error).message);
-    }
-    setLoading(false);
+    setToastMessage('❌ Cannot delete weather - database is read-only');
   };
 
-  // Update weather - local from Rails API Postgres DB (weather table)
+  // READ-ONLY: Update weather function removed - database is read-only
   const updateWeather = async (id: number, updatedData: Partial<WeatherRecord>): Promise<void> => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/api/v1/weather/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ weather: updatedData }),
-      });
-      const result: ApiResponse<WeatherRecord> = await response.json();
-      setToastMessage('✅ ' + (result.message || 'Weather updated successfully!'));
-      loadWeatherData(); // Reload the list
-    } catch (error) {
-      setToastMessage('❌ Error updating weather: ' + (error as Error).message);
-    }
-    setLoading(false);
+    setToastMessage('❌ Cannot update weather - database is read-only');
   };
 
   // Handle form input changes
@@ -141,7 +94,7 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
 
   // Load data on component mount
   useEffect(() => {
-    loadWeatherData();
+    // loadWeatherData();
   }, []);
 
   return (

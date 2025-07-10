@@ -35,9 +35,9 @@ const CompanySelector: React.FC = () => {
     const company = testCompanies.find(c => c.id === companyId) || null;
     setSelectedCompany(company);
     if (input) {
-      setInput(prevInput => `${prevInput} We are working on ${company?.name} today. My website is ${company?.website}. Find our headquarters, and give me the weather for the next 7 days in that area. We have some marketing initiatives that may be dependant on the weather so it is important. While you are at it since you are looking at our site, give us your best campaign strategy to get more customers in the next 8 weeks.`);
+      setInput(prevInput => `${prevInput} We are working on ${company?.name} today. My website is ${company?.website}. we are located in ${company?.location}, and give me the weather for the next 7 days in that area. We have some marketing initiatives that may be dependant on the weather so it is important. While you are at it since you are looking at our site, give us your best campaign strategy to get more customers in the next 8 weeks.`);
     } else {
-      setInput(`We are working on ${company?.name} today. My website is ${company?.website}. Find our headquarters, and give me the weather for the next 7 days in that area. We have some marketing initiatives that may be dependant on the weather so it is important. While you are at it since you are looking at our site, give us your best campaign strategy to get more customers in the next 8 weeks.`);
+      setInput(`We are working on ${company?.name} today. My website is ${company?.website}. we are located in ${company?.location}, and give me the weather for the next 7 days in that area. We have some marketing initiatives that may be dependant on the weather so it is important. While you are at it since you are looking at our site, give us your best campaign strategy to get more customers in the next 8 weeks.`);
     }
   };
 

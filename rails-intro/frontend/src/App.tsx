@@ -15,12 +15,8 @@ const LLMApp: React.FC = () => {
     loading,
     forecastData,
     forecastLoading,
-    formData,
     loadWeatherData,
     getCurrentWeather,
-    createWeather,
-    deleteWeather,
-    handleInputChange,
   } = useWeather();
 
   return (
@@ -84,48 +80,12 @@ const LLMApp: React.FC = () => {
               )}
             </CollapsibleSection>
 
-            <CollapsibleSection title="Add New Weather Data">
-              <div style={styles.formGroup} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  style={styles.formGroupInput}
-                  className="w-full"
-                />
-                <input
-                  type="number"
-                  name="temperature"
-                  placeholder="Temperature"
-                  value={formData.temperature}
-                  onChange={handleInputChange}
-                  style={styles.formGroupInput}
-                  className="w-full"
-                />
-                <input
-                  type="text"
-                  name="condition"
-                  placeholder="Condition (e.g., Sunny, Rainy)"
-                  value={formData.condition}
-                  onChange={handleInputChange}
-                  style={styles.formGroupInput}
-                  className="w-full"
-                />
-                <button 
-                  onClick={createWeather}
-                  disabled={loading}
-                  style={{ ...styles.btn, ...styles.btnPrimary }}
-                  className="w-full"
-                >
-                  {loading ? 'Creating...' : 'Create Weather'}
-                </button>
-              </div>
-            </CollapsibleSection>
+            {/* <CollapsibleSection title="Weather Data (Read-Only)">
+              <p className="text-sm text-gray-600 pb-2">Database is read-only - no write operations allowed</p>
+            </CollapsibleSection> */}
 
             {/* Action Buttons */}
-            <div style={styles.actionButtons} className="w-full">
+            {/* <div style={styles.actionButtons} className="w-full">
               <button 
                 onClick={loadWeatherData}
                 disabled={loading}
@@ -134,13 +94,13 @@ const LLMApp: React.FC = () => {
               >
                 {loading ? 'Loading...' : '🔄 Refresh Weather Data'}
               </button>
-            </div>
+            </div> */}
 
-            <CollapsibleSection title="Current Weather Data">
+            {/* <CollapsibleSection title="Current Weather Data">
               {loading ? (
                 <p className="text-center text-gray-600">Loading...</p>
               ) : weatherData.length === 0 ? (
-                <p className="text-center text-gray-600">No weather data found. Create some data above!</p>
+                <p className="text-center text-gray-600">No weather data found in read-only database.</p>
               ) : (
                 <div style={styles.weatherGrid} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {weatherData.map((weather) => (
@@ -151,27 +111,22 @@ const LLMApp: React.FC = () => {
                       <p style={styles.weatherCardDate} className="text-xs">
                         Created: {new Date(weather.created_at).toLocaleDateString()}
                       </p>
-                      <button
-                        onClick={() => deleteWeather(weather.id)}
-                        style={{ ...styles.btn, ...styles.btnDanger }}
-                        disabled={loading}
-                        className="w-full mt-2"
-                      >
-                        🗑️ Delete
-                      </button>
+                      <div className="w-full mt-2 text-center text-xs text-gray-500">
+                        Read-only data
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
-            </CollapsibleSection>
+            </CollapsibleSection> */}
 
-            <CollapsibleSection title="API Response Console">
+            {/* <CollapsibleSection title="API Response Console">
               <div style={styles.consoleContent}>
                 <pre style={styles.jsonDisplay}>
                   {JSON.stringify(weatherData, null, 2)}
                 </pre>
               </div>
-            </CollapsibleSection>
+            </CollapsibleSection> */}
 
             {forecastData && (
               <CollapsibleSection title="Open-Meteo API Response Console">

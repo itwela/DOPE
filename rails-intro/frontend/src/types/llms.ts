@@ -23,6 +23,7 @@ export interface LLMContextType {
     clearMessages: () => void;
     loadCompanies: () => Promise<void>;
     generateMarketingPlan: (company: Company | null) => Promise<string>;
+    talkToAgent: (message: string) => Promise<string>;
 }
 
 export interface Company {

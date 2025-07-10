@@ -6,7 +6,7 @@ import ChatInput from './ChatInput';
 import { Company } from '../types/llms';
 
 export default function AiSection() {
-    const { generateMarketingPlan, placeHolderMessage, messages, setMessages, selectedCompany } = useLLM();
+    const { generateMarketingPlan, talkToAgent, placeHolderMessage, messages, setMessages, selectedCompany } = useLLM();
     const { setToastMessage } = useToastMessage();
 
     // This is the handle key down press function in the ChatInput.
@@ -19,13 +19,41 @@ export default function AiSection() {
         setMessages(prevMessages => [...prevMessages, { text: "...", sender: 'ai' }]);
 
         // TODO: Here you would call your actual AI agent.
-        // For example:
-        // const aiResponseText = await generateMarketingPlan(company, message);
-        // And then update the 'thinking' message with the actual response.
+        // 
+        const result = await talkToAgent(message);
 
+        // console.log('result', result);
+
+        setMessages(prevMessages => {
+            const newMessages = [...prevMessages];
+            newMessages[newMessages.length - 1] = { text: result, sender: 'ai' };
+            return newMessages;
+        });
+
+
+        // For now, let's just simulate an AI response after a delay.
+        // setTimeout(() => {
+        //     setMessages(prevMessages => {
+        //         const newMessages = [...prevMessages];
+        //         newMessages[newMessages.length - 1] = { text: placeHolderMessage, sender: 'ai' };
+        //         return newMessages;
+        //     });
+        // }, 1000);
+
+    };
+
+    const handleGeneratePlan = async (message: string) => {
+        const userMessage: Message = { text: message, sender: 'user' };
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+
+        // Placeholder for AI 'thinking' indicator
+        setMessages(prevMessages => [...prevMessages, { text: "...", sender: 'ai' }]);
+
+        // TODO: Here you would call your actual AI agent.
+        // 
         const result = await generateMarketingPlan(selectedCompany as Company || null);
 
-        console.log('result', result);
+        // console.log('result', result);
 
         setMessages(prevMessages => {
             const newMessages = [...prevMessages];
@@ -64,7 +92,7 @@ export default function AiSection() {
     return (
         <div style={styles.aiSectionContainer}>
             <ChatWindow messages={messages} />
-            <ChatInput onSendMessage={handleSendMessage} />
+            <ChatInput onSendMessage={handleSendMessage} onGeneratePlan={handleGeneratePlan} />
         </div>
     );
 }

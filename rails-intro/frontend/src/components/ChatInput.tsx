@@ -3,14 +3,22 @@ import { useLLM } from '../contexts/LLMContext';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
+  onGeneratePlan: (message: string) => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onGeneratePlan }) => {
   const { input, setInput, clearMessages } = useLLM();
 
   const handleSend = () => {
     if (input.trim()) {
       onSendMessage(input);
+      setInput('');
+    }
+  };
+
+  const handleGeneratePlan = () => {
+    if (input.trim()) {
+      onGeneratePlan(input);
       setInput('');
     }
   };
@@ -28,10 +36,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyPress}
-        style={{ 
-          padding: '10px', 
-          borderRadius: '8px 0 0 8px', 
-          border: '1px solid #ccc', 
+        style={{
+          padding: '10px',
+          borderRadius: '8px 0 0 8px',
+          border: '1px solid #ccc',
           outline: 'none',
           resize: 'none',
           lineHeight: '1.5',
@@ -46,29 +54,54 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
 
       <div className='flex gap-2 w-full justify-between'>
 
-        <button 
-          onClick={clearMessages} 
-          style={{ 
-            background: 'gray', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '8px 8px 8px 8px', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            height: '40px' // Match the minimum height of textarea
-          }}
-        >
-          <p className="text-xs">Clear</p>
-        </button>
-        <button 
-          onClick={handleSend} 
-          style={{ 
-            background: 'black', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '8px 8px 8px 8px', 
+        <div className='flex gap-2'>
+          
+          {/* NOTE -CLEAR */}
+          <button
+            onClick={clearMessages}
+            style={{
+              background: 'gray',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px 8px 8px 8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              height: '40px' // Match the minimum height of textarea
+            }}
+          >
+            <p className="text-xs">Clear</p>
+          </button>
+
+          {/* NOTE -GENERATE PLAN */}
+          <button
+            onClick={handleGeneratePlan}
+            style={{
+              background: 'black',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px 8px 8px 8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              height: '40px' // Match the minimum height of textarea
+            }}
+          >
+            <p className="text-xs">Generate Plan</p>
+          </button>
+
+        </div>
+
+        {/* NOTE -SEND */}
+        <button
+          onClick={handleSend}
+          style={{
+            background: 'black',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px 8px 8px 8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

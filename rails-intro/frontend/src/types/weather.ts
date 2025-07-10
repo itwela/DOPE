@@ -62,9 +62,9 @@ export interface WeatherContextType {
   // Actions
   loadWeatherData: () => Promise<void>;
   getCurrentWeather: (latitude?: number, longitude?: number) => Promise<void>;
-  createWeather: () => Promise<void>;
-  deleteWeather: (id: number) => Promise<void>;
-  updateWeather: (id: number, updatedData: Partial<WeatherRecord>) => Promise<void>;
+  createWeather: () => Promise<void>; // READ-ONLY: Disabled
+  deleteWeather: (id: number) => Promise<void>; // READ-ONLY: Disabled
+  updateWeather: (id: number, updatedData: Partial<WeatherRecord>) => Promise<void>; // READ-ONLY: Disabled
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   clearMessage: () => void;
   clearForecastData: () => void;

@@ -5,6 +5,7 @@ import { useToastMessage } from './ToastMessageContext';
 import { Agent, tool, run, setDefaultOpenAIKey, setDefaultOpenAIClient } from '@openai/agents';
 import { setOpenAIAPI } from '@openai/agents';
 import OpenAI from 'openai';
+import { dopeMarketingAgent } from './dopeAgents';
 
 const LLMContext = createContext<LLMContextType | null>(null);
 
@@ -48,74 +49,68 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
     setLoading(true);
     setToastMessage('');
     try {
-      const response = await fetch('/api/v1/companies');
-      if (!response.ok) {
-        console.log('response', response);
-        throw new Error('Failed to fetch companies');
-      }
-      const data = await response.json();
-      console.log('data', data);
-      setTestCompanies(data);
+      // Hardcoded companies with bigsender boolean field
+      const companies: Company[] = [
+        // Big Senders
+        {
+          id: 1,
+          name: 'The Pittsburgh Roofer',
+          website: 'https://www.thepittsburghroofer.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Sunny, 75°F',
+          bigsender: true
+        },
+        {
+          id: 2,
+          name: 'PRQ Exteriors',
+          website: 'https://prqexteriors.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Partly Cloudy, 72°F',
+          bigsender: true
+        },
+        {
+          id: 3,
+          name: 'Matheson Heating',
+          website: 'https://www.mathesonheating.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Clear, 78°F',
+          bigsender: true
+        },
+        // Little Senders
+        {
+          id: 4,
+          name: 'Roble Tree Care',
+          website: 'https://www.robletreecare.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Overcast, 70°F',
+          bigsender: false
+        },
+        {
+          id: 5,
+          name: 'Palmer Shine',
+          website: 'https://www.palmershine.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Light Rain, 68°F',
+          bigsender: false
+        },
+        {
+          id: 6,
+          name: 'Iron Mountain Plumbing',
+          website: 'https://www.ironmountainplumbing.com/',
+          location: 'Pittsburgh, PA',
+          weather_data: 'Sunny, 76°F',
+          bigsender: false
+        }
+      ];
+      
+      setTestCompanies(companies);
+      setToastMessage('✅ Companies loaded successfully!');
     } catch (error) {
       setToastMessage(`❌ Error loading companies: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(false);
     }
   };
-
-  // --
-
-  const marketingPlanTool = tool({
-    name: 'generate_marketing_plan',
-    description: 'Generate a comprehensive marketing plan for a company',
-    parameters: {
-      type: 'object',
-      properties: {
-        company_name: { type: 'string' },
-      },
-      required: ['company_name'],
-      additionalProperties: false
-    },
-    strict: true,
-    execute: async (input: any) => {
-      const { company_name, industry, target_audience, budget } = input;
-      return `Marketing Plan for ${company_name}:
-
-**Industry:** ${industry || 'General'}
-**Target Audience:** ${target_audience || 'General consumers'}
-**Budget:** ${budget || 'Standard'}
-
-## 1. Digital Marketing Strategy
-- Social media campaigns across major platforms
-- SEO optimization for better search visibility
-- Email marketing campaigns
-- Content marketing and blogging
-
-## 2. Traditional Marketing
-- Print advertising in relevant publications
-- Local event sponsorships
-- Community partnerships
-- Direct mail campaigns
-
-## 3. Performance Metrics
-- Track engagement rates
-- Monitor conversion rates
-- Measure ROI on all campaigns
-- Regular performance reviews
-
-## 4. Timeline
-- Month 1-2: Setup and initial campaigns
-- Month 3-6: Optimization and scaling
-- Month 7-12: Advanced strategies and expansion`;
-    },
-  });
-
-  const dopeMarketingAgent = new Agent({
-    name: 'Dope Marketing Agent',
-    // description: 'A marketing agent that can generate a marketing plan for a company',
-    instructions: 'You are a helpful assistant',
-    tools: [marketingPlanTool]
-  })
 
   // --
   const generateMarketingPlan = async (company: Company | null): Promise<string> => {
@@ -149,6 +144,11 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
     }
   }
 
+  const talkToAgent = async (message: string) => {
+    const result = await run(dopeMarketingAgent, message);
+    return result.finalOutput || 'No response from agent';
+  }
+
   useEffect(() => {
     loadCompanies();
   }, []);
@@ -167,7 +167,8 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
       setMessages,
       clearMessages,
       loadCompanies,
-      generateMarketingPlan
+      generateMarketingPlan,
+      talkToAgent
     }}>
       {children}
     </LLMContext.Provider>
