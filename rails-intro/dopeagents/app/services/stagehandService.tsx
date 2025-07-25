@@ -785,13 +785,13 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
         // Step 5: Take screenshot of homepage
         await page.goto(url); // Go back to homepage for screenshot
-        const screenshot = await page.screenshot();
-        const screenshotPath = 'public/temp/screenshot.png';
+        // const screenshot = await page.screenshot();
+        // const screenshotPath = 'public/temp/screenshot.png';
 
-        if (!fs.existsSync('public/temp')) {
-            fs.mkdirSync('public/temp', { recursive: true });
-        }
-        fs.writeFileSync(screenshotPath, screenshot);
+        // if (!fs.existsSync('public/temp')) {
+        //     fs.mkdirSync('public/temp', { recursive: true });
+        // }
+        // fs.writeFileSync(screenshotPath, screenshot);
 
         console.log(`✅ Scraping complete! Scraped ${allScrapedData.length} pages (homepage + ${pagesToScrape.length} priority pages)`);
         console.log(`📋 Listed ${categorizedLinks.low_priority.length} low priority links without scraping`);
@@ -808,7 +808,7 @@ export async function scrapeWebsiteForMarketingData(url: string) {
             discoveredLinks: allLinks.length,
             scrapedPagesLength: allScrapedData.length,
             aggregatedData: aggregatedData,
-            screenshotPath: screenshotPath,
+            screenshotPath: '',
             // Landing Pages
             linkBreakdown: {
                 high: categorizedLinks.high_priority.length,
