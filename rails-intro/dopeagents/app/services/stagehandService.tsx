@@ -32,6 +32,33 @@ export interface AggregatedData {
     lowPriorityLinks?: unknown[];
 }
 
+// Add this above aggregateScrapedData
+interface AggregatedDataMutable {
+    images: Set<string>;
+    fonts: Set<string>;
+    headlines: Set<string>;
+    subHeaders: Set<string>;
+    taglines: Set<string>;
+    coreServices: Set<string>;
+    allServices: Set<string>;
+    tones: Set<string>;
+    offers: Set<string>;
+    actions: Set<string>;
+    ctas: Set<string>;
+    companyFacts: Set<string>;
+    awards: Set<string>;
+    benefits: Set<string>;
+    highlightList: Set<string>;
+    testimonials: Set<string>;
+    reviews: Set<string>;
+    serviceAreas: Set<string>;
+    marketingQuestions: Set<string>;
+    scrapedUrls: Set<string>;
+    yearFounded: string | null;
+    scrapedPagesLength: number;
+    lowPriorityLinks?: unknown[];
+}
+
 export interface ScraperToolResponse {
     status: string;
     discoveredLinks: number;
@@ -404,32 +431,6 @@ export async function scrapePageData(page: Page, url: string, pageType: string) 
 
 }
 
-// Add this above aggregateScrapedData
-interface AggregatedDataMutable {
-    images: Set<string>;
-    fonts: Set<string>;
-    headlines: Set<string>;
-    subHeaders: Set<string>;
-    taglines: Set<string>;
-    coreServices: Set<string>;
-    allServices: Set<string>;
-    tones: Set<string>;
-    offers: Set<string>;
-    actions: Set<string>;
-    ctas: Set<string>;
-    companyFacts: Set<string>;
-    awards: Set<string>;
-    benefits: Set<string>;
-    highlightList: Set<string>;
-    testimonials: Set<string>;
-    reviews: Set<string>;
-    serviceAreas: Set<string>;
-    marketingQuestions: Set<string>;
-    scrapedUrls: Set<string>;
-    yearFounded: string | null;
-    scrapedPagesLength: number;
-    lowPriorityLinks?: unknown[];
-}
 
 // NOTE - Helper function to aggregate all scraped data
 export async function aggregateScrapedData(allData: unknown[]): Promise<AggregatedData> {
@@ -536,7 +537,6 @@ export async function aggregateScrapedData(allData: unknown[]): Promise<Aggregat
 }
 
 
-
 export async function analyzeImagesForBrandColors(screenshotPath: string) {
 
     // const llava13bString = `yorickvp/llava-13b:80537f9eead1a5bfa72d5ac6ea6414379be41d4d4f6679fd776e9535d1eb58bb`
@@ -609,10 +609,13 @@ export async function scrapeWebsiteForMarketingData(url: string) {
     ---------------------------------------------------------------- */
 
     const gpt_4_1_nano_stagehand = new Stagehand({
-        env: "LOCAL",
+        env: process.env.NODE_ENV === "production" ? "BROWSERBASE" : "LOCAL",
         modelName: "gpt-4.1-nano",
         modelClientOptions: {
             apiKey: process.env.NODE_ENV === "production" ? process.env.OPENAI_API_KEY : process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+        },
+        browserbaseSessionCreateParams: {
+            projectId: process.env.BROWSERBASE_PROJECT_ID || "",
         },
         localBrowserLaunchOptions: {
             headless: true,
