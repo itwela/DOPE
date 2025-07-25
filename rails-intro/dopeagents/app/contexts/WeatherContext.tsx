@@ -68,12 +68,12 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children }) =>
 
   // READ-ONLY: Delete weather function removed - database is read-only
   const deleteWeather = async (id: number): Promise<void> => {
-    setToastMessage('❌ Cannot delete weather - database is read-only');
+    setToastMessage(id + '❌ Cannot delete weather - database is read-only');
   };
 
   // READ-ONLY: Update weather function removed - database is read-only
   const updateWeather = async (id: number, updatedData: Partial<WeatherRecord>): Promise<void> => {
-    setToastMessage('❌ Cannot update weather - database is read-only');
+    setToastMessage(id + ' ' + updatedData.city + '❌ Cannot update weather - database is read-only');
   };
 
   // Handle form input changes

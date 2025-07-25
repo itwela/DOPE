@@ -20,6 +20,14 @@ export interface LLMContextType {
     setInput: React.Dispatch<React.SetStateAction<string>>;
     messages: Message[];
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+    screenshotPath: string | null;
+    setScreenshotPath: React.Dispatch<React.SetStateAction<string | null>>;
+    brandColors: string[];
+    setBrandColors: React.Dispatch<React.SetStateAction<string[]>>;
+    classifiedImages: unknown[];
+    setClassifiedImages: React.Dispatch<React.SetStateAction<unknown[]>>;
+    campaignElements: unknown | null;
+    setCampaignElements: React.Dispatch<React.SetStateAction<unknown | null>>;
     clearMessages: () => void;
     loadCompanies: () => Promise<void>;
     generateMarketingPlan: (company: Company | null) => Promise<string>;
@@ -31,6 +39,22 @@ export interface Company {
     name: string;
     website: string;
     location?: string;
-    weather_data?: any;
+    weather_data?: unknown;
     bigsender: boolean;
+}
+
+export interface CampaignElements {
+    phoneNumber?: string;
+    companyLogoSrcAttribute?: string;
+    header: {
+        tagline: string;
+        tone?: string;
+    };
+    subHeader?: string;
+    valueProposition?: string;
+    brandColors: {
+        primary?: string;
+        secondary?: string;
+        accent?: string;
+    };
 }

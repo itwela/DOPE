@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, Transition } from "framer-motion"
 import { LucideIcon } from "lucide-react"
 import { useOnClickOutside } from "usehooks-ts"
 
@@ -110,7 +110,7 @@ export function ExpandedTabs({
             onClick={() => 
               handleSelect(index)
             }
-            transition={transition as any}
+            transition={transition as Transition}
             className={cn(
               "relative w-full flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
               selected === index
@@ -126,7 +126,7 @@ export function ExpandedTabs({
                   initial="initial"
                   animate="animate"
                   exit="exit"
-                  transition={transition as any}
+                  transition={transition as Transition}
                   className="overflow-hidden w-max whitespace-nowrap"
                 >
                   {tab.title}

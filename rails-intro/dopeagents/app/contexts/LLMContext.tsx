@@ -4,8 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { LLMContextType, Company } from '../types/llms';
 import { Message } from '../dopeComponents/ChatWindow';
 import { useToastMessage } from './ToastMessageContext';
-import { Agent, tool, run, setDefaultOpenAIKey, setDefaultOpenAIClient } from '@openai/agents';
-import { setOpenAIAPI } from '@openai/agents';
+import { run, setDefaultOpenAIClient } from '@openai/agents';
 import OpenAI from 'openai';
 import { dopeMarketingAgent } from './dopeAgents';
 
@@ -28,6 +27,10 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
     { text: "Hello! I can help you generate a marketing plan. What company are we working with today?", sender: 'ai' }
   ]);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [screenshotPath, setScreenshotPath] = useState<string | null>(null);
+  const [brandColors, setBrandColors] = useState<string[]>([]);
+  const [classifiedImages, setClassifiedImages] = useState<unknown[]>([]);
+  const [campaignElements, setCampaignElements] = useState<unknown | null>(null);
   const { setToastMessage } = useToastMessage();
 
   // Configure OpenAI for the Agents SDK
@@ -167,10 +170,18 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
       setInput,
       messages,
       setMessages,
+      screenshotPath,
+      setScreenshotPath,
       clearMessages,
       loadCompanies,
       generateMarketingPlan,
-      talkToAgent
+      talkToAgent,
+      brandColors,
+      setBrandColors,
+      classifiedImages,
+      setClassifiedImages,
+      campaignElements,
+      setCampaignElements
     }}>
       {children}
     </LLMContext.Provider>

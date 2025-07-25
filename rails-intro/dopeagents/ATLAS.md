@@ -1,7 +1,9 @@
 So the tech I'm using is
 
 Ui
-- Shadcn
+- Shadcn 
+- Skiper-ui (shadcn buffed)
+- My own custom stuff
 
 
 Ai Stuff
@@ -9,6 +11,7 @@ Ai Stuff
 - Open Ai Agent SDK
 - Groq
 - Stagehand
+- Gemini
 
 Backend
 - Rails for db stuff

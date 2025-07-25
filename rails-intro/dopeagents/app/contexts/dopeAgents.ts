@@ -1,6 +1,19 @@
-import { Agent, tool, run, setDefaultOpenAIKey, setDefaultOpenAIClient } from '@openai/agents';
+import { Agent, tool } from '@openai/agents';
 
-export const marketingPlanTool = tool({
+// Types for tool input
+interface MarketingPlanInput {
+  company_name: string;
+  industry?: string;
+  target_audience?: string;
+  budget?: string;
+}
+
+interface ImageClassifierInput {
+  image: string;
+}
+
+// TODO
+export const creativeFullfillmentTool = tool({
     name: 'generate_marketing_plan',
     description: 'Generate a comprehensive marketing plan for a company',
     parameters: {
@@ -12,8 +25,8 @@ export const marketingPlanTool = tool({
         additionalProperties: false
     },
     strict: true,
-    execute: async (input: any) => {
-        const { company_name, industry, target_audience, budget } = input;
+    execute: async (input: unknown) => {
+        const { company_name, industry, target_audience, budget } = input as MarketingPlanInput;
         return `Marketing Plan for ${company_name}:
 
 **Industry:** ${industry || 'General'}
@@ -45,9 +58,29 @@ export const marketingPlanTool = tool({
     },
 });
 
+// TODO
+export const imageClassifierTool = tool({
+    name: 'image_classifier',
+    description: 'Classify an image into a category',
+    parameters: {
+        type: 'object',
+        properties: {
+            image: { type: 'string' },
+        },
+        required: ['image'],
+        additionalProperties: false
+    },
+    strict: true,
+    execute: async (input: unknown) => {
+        const { image } = input as ImageClassifierInput;
+        return `Image Classifier: ${image}`;
+
+    },
+});
+
 export const dopeMarketingAgent = new Agent({
     name: 'Dope Marketing Agent',
     // description: 'A marketing agent that can generate a marketing plan for a company',
     instructions: 'You are a helpful assistant',
-    tools: [marketingPlanTool]
+    tools: [creativeFullfillmentTool, imageClassifierTool]
 })

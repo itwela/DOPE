@@ -8,7 +8,7 @@ import ChatInput from './ChatInput';
 import { Company } from '../types/llms';
 
 export default function AiSection() {
-    const { generateMarketingPlan, talkToAgent, placeHolderMessage, messages, setMessages, selectedCompany } = useLLM();
+    const { generateMarketingPlan, talkToAgent, messages, setMessages, selectedCompany } = useLLM();
     const { setToastMessage } = useToastMessage();
 
     // This is the handle key down press function in the ChatInput.

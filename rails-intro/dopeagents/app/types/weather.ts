@@ -30,7 +30,7 @@ export interface HourlyDataRecord {
   relative_humidity_2m?: number;
   precipitation?: number;
   weather_code?: number;
-  [key: string]: any; // For other weather variables
+  [key: string]: unknown; // For other weather variables
 }
 
 export interface OpenMeteoResponse {

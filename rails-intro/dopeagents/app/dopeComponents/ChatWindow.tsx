@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react';
-import { useLLM } from '../contexts/LLMContext';
 
 export interface Message {
   text: string;
@@ -13,7 +12,6 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
-  const { clearMessages } = useLLM();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
