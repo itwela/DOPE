@@ -80,6 +80,13 @@ export interface ScraperToolResponse {
     website: string;
 }
 
+// Add a type for our streaming updates
+export type ScrapeUpdate = {
+    type: 'progress' | 'complete' | 'error';
+    message: string;
+    data?: any;
+};
+
 // Helper function to get all images from a page
 export async function getAllImagesFromPage(page: Page) {
     const images = await page.evaluate(() => {
@@ -250,7 +257,7 @@ export async function getAllFontsFromPage(page: Page) {
 
 // Helper function to get all links from a page
 export async function getAllLinksFromPage(page: Page, baseUrl: string) {
-    
+
     const links = await page.evaluate((baseUrl) => {
         const allLinks = Array.from(document.querySelectorAll('a[href]'));
         return allLinks
@@ -420,6 +427,7 @@ export async function scrapePageData(page: Page, url: string, pageType: string) 
             images: images,
             fonts: fonts
         };
+
     } catch (error) {
         console.log(`Error extracting data from ${url}:`, error);
         return {
@@ -430,7 +438,6 @@ export async function scrapePageData(page: Page, url: string, pageType: string) 
     }
 
 }
-
 
 // NOTE - Helper function to aggregate all scraped data
 export async function aggregateScrapedData(allData: unknown[]): Promise<AggregatedData> {
@@ -596,10 +603,8 @@ export async function analyzeImagesForBrandColors(screenshotPath: string) {
 }
 
 
-// NOTE - THIS IS THE SCRAPER TOOL
+// NOTE - THIS IS THE ORIGINAL SERVER ACTION (no callback)
 export async function scrapeWebsiteForMarketingData(url: string) {
-
-
     console.log(`Starting comprehensive scrape of: ${url}`);
     const debugging = false;
     // const debugging = true;
@@ -644,7 +649,6 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
     // NOTE - DEBUGGING MODE
     if (debugging) {
-
         const allLinks = await getAllLinksFromPage(page, url);
 
         // Collect all unique URLs from the links (including homepage)
@@ -671,7 +675,7 @@ export async function scrapeWebsiteForMarketingData(url: string) {
         // Deduplicate images
         allImages = Array.from(new Set(allImages));
 
-        return {
+        const result = {
             status: "success",
             discoveredLinks: allLinks.length,
             scrapedPagesLength: scrapedUrls.length,
@@ -715,9 +719,11 @@ export async function scrapeWebsiteForMarketingData(url: string) {
             website: url,
         } as ScraperToolResponse;
 
-    // NOTE - REAL MODE
-    } else {
+        return result;
 
+        // NOTE - REAL MODE
+    } else {
+        const currentEnvironment = process.env.NODE_ENV;
         const allLinks = await getAllLinksFromPage(page, url);
         const categorizedLinks = await categorizeLinks(allLinks);
 
@@ -731,10 +737,19 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
         // Step 3: Scrape high and medium priority pages only
         const allScrapedData = [homepageData];
-        const pagesToScrape = [
-            ...categorizedLinks.high_priority.slice(0, 8), // Limit high priority to prevent timeout
-            ...categorizedLinks.medium_priority.slice(0, 5) // Limit medium priority to prevent timeout
-        ];
+        let pagesToScrape: { url: string; text: string }[] = [];
+
+        if (currentEnvironment === "production") {
+            const pagesToScrape = [
+                ...categorizedLinks.high_priority.slice(0, 2), // Limit high priority to prevent timeout
+                ...categorizedLinks.medium_priority.slice(0, 2) // Limit medium priority to prevent timeout
+            ];
+        } else {
+            const pagesToScrape = [
+                ...categorizedLinks.high_priority,
+                ...categorizedLinks.medium_priority
+            ];
+        }
 
         console.log(`Scraping ${pagesToScrape.length} high and medium priority pages...`);
 
@@ -752,13 +767,13 @@ export async function scrapeWebsiteForMarketingData(url: string) {
         // Step 4: Collect images from all pages (same method as debug mode)
         const allImages: string[] = [];
         const scrapedUrls: string[] = [];
-        
+
         // Get images from homepage
         await page.goto(url);
         const homepageImages = await getAllImagesFromPage(page);
         allImages.push(...homepageImages);
         scrapedUrls.push(url);
-        
+
         // Get images from all scraped pages
         for (const link of pagesToScrape) {
             try {
@@ -770,13 +785,13 @@ export async function scrapeWebsiteForMarketingData(url: string) {
                 console.log(`Failed to get images from ${link.url}:`, error);
             }
         }
-        
+
         // Deduplicate images
         const uniqueImages = Array.from(new Set(allImages));
-        
+
         // Aggregate all other data from AI extraction
         const aggregatedData = await aggregateScrapedData(allScrapedData);
-        
+
         // Replace images with our collected images
         aggregatedData.images = uniqueImages;
 
@@ -799,11 +814,7 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
         await gpt_4_1_nano_stagehand.close();
 
-        // Brand colors will be extracted later in GenerationManager from classified images
-
-
-
-        return {
+        const finalResult = {
             status: "success",
             discoveredLinks: allLinks.length,
             scrapedPagesLength: allScrapedData.length,
@@ -825,8 +836,9 @@ export async function scrapeWebsiteForMarketingData(url: string) {
             brandColors: [], // Will be set later in GenerationManager
             website: url,
         } as ScraperToolResponse;
+
+        return finalResult;
     }
-    
 }
 
 
