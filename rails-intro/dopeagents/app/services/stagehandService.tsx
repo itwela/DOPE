@@ -815,7 +815,7 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
         console.log(`✅ Scraping complete! Scraped ${allScrapedData.length} pages (homepage + ${pagesToScrape.length} priority pages)`);
         console.log(`📋 Listed ${categorizedLinks.low_priority.length} low priority links without scraping`);
-        console.log('Aggregated Data: ', aggregatedData);
+        console.log('Aggregated Data Headlines Length: ', aggregatedData.headlines.length);
 
         await gpt_4_1_nano_stagehand.close();
 

@@ -713,7 +713,9 @@ const PasswordScreen: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
 
 const App: React.FC = () => {
 
-  const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
+  const apiKey = process.env.NODE_ENV === 'production'
+    ? process.env.OPENAI_API_KEY
+    : process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 
   if (apiKey) {
     setDefaultOpenAIKey(apiKey);

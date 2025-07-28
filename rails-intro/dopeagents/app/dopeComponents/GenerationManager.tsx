@@ -25,7 +25,7 @@ export const GenerationManager = () => {
   const handleStart = async () => {
     setLoading(true);
     setStrategyLoading(false);
-    setProgressMessage("Initializing...");
+    setProgressMessage("Scraping website...");
     setToastMessage("🚀 Starting website scraping...");
     
     try {
