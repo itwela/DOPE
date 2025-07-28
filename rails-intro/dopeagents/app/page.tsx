@@ -717,11 +717,15 @@ const App: React.FC = () => {
     ? process.env.OPENAI_API_KEY
     : process.env.NEXT_PUBLIC_OPENAI_API_KEY || '';
 
-  if (apiKey) {
-    setDefaultOpenAIKey(apiKey);
-  } else {
-    console.log('No API key found');
-  }
+  useEffect(() => {
+    if (apiKey) {
+      setDefaultOpenAIKey(apiKey);
+      setOpenAIAPI('responses')
+      console.log('API key set');
+    } else {
+      console.log('No API key found');
+    }
+  }, [apiKey]);
 
   // const customOpenAIClient = new OpenAI({
   //   baseURL: 'https://api.openai.com/v1',
@@ -729,7 +733,6 @@ const App: React.FC = () => {
   //   dangerouslyAllowBrowser: true
   // });
 
-  setOpenAIAPI('responses');
 
   const [unlocked, setUnlocked] = useState(false);
 
