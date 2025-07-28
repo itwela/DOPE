@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import WrapButton  from "@/components/ui/wrap-button"
-import { scrapeWebsiteForMarketingDataWithProgress, ScrapeUpdate } from "@/app/services/stagehandService"
+import { scrapeWebsiteForMarketingData } from "@/app/services/stagehandService"
 import { useLLM } from "../contexts/LLMContext"
 import { useToastMessage } from "../contexts/ToastMessageContext"
 import { classifyImagesForOntologyGemini, extractBrandColorsGemini, generateCampaignStrategies } from "../services/geminiService"
@@ -29,23 +29,8 @@ export const GenerationManager = () => {
     setToastMessage("🚀 Starting website scraping...");
     
     try {
-      const result = await scrapeWebsiteForMarketingDataWithProgress(
+      const result = await scrapeWebsiteForMarketingData(
         selectedCompany?.website as string,
-        (update: ScrapeUpdate) => {
-          // Handle progress updates
-          setProgressMessage(update.message);
-          
-          // Show progress in toast
-          if (update.type === 'progress') {
-            setToastMessage(`🔄 ${update.message}`);
-          } else if (update.type === 'error') {
-            console.error('Scraping error:', update.message);
-            setToastMessage(`❌ ${update.message}`);
-          } else if (update.type === 'complete') {
-            console.log('Scraping completed successfully');
-            setToastMessage(`✅ ${update.message}`);
-          }
-        }
       );
       
       if (result?.aggregatedData) {
@@ -66,7 +51,7 @@ export const GenerationManager = () => {
 
         // UPDATE UI IMMEDIATELY with classified images
         setClassifiedImages(finalClassifiedImages);
-        setCampaignElements((prev: any) => ({
+        setCampaignElements((prev: object) => ({
           ...prev,
           images: finalClassifiedImages
         }));
@@ -88,7 +73,7 @@ export const GenerationManager = () => {
 
         // UPDATE UI IMMEDIATELY with brand colors
         setBrandColors(extractedBrandColors);
-        setCampaignElements((prev: any) => ({
+        setCampaignElements((prev: object) => ({
           ...prev,
           brandColors: extractedBrandColors
         }));
@@ -105,7 +90,7 @@ export const GenerationManager = () => {
         );
         
         // FINAL UI UPDATE with campaign strategies
-        setCampaignElements((prev: any) => ({
+        setCampaignElements((prev: object) => ({
           ...prev,
           campaignStrategies: campaignStrategies
         }));

@@ -84,7 +84,7 @@ export interface ScraperToolResponse {
 export type ScrapeUpdate = {
     type: 'progress' | 'complete' | 'error';
     message: string;
-    data?: any;
+    data?: unknown;
 };
 
 // Helper function to get all images from a page
@@ -607,6 +607,8 @@ export async function analyzeImagesForBrandColors(screenshotPath: string) {
 export async function scrapeWebsiteForMarketingData(url: string) {
     console.log(`Starting comprehensive scrape of: ${url}`);
     const debugging = false;
+    const currentEnvironment = process.env.NODE_ENV;
+
     // const debugging = true;
 
     /* ----------------------------------------------------------------
@@ -723,7 +725,6 @@ export async function scrapeWebsiteForMarketingData(url: string) {
 
         // NOTE - REAL MODE
     } else {
-        const currentEnvironment = process.env.NODE_ENV;
         const allLinks = await getAllLinksFromPage(page, url);
         const categorizedLinks = await categorizeLinks(allLinks);
 
@@ -740,15 +741,19 @@ export async function scrapeWebsiteForMarketingData(url: string) {
         let pagesToScrape: { url: string; text: string }[] = [];
 
         if (currentEnvironment === "production") {
-            const pagesToScrape = [
+            pagesToScrape = [
                 ...categorizedLinks.high_priority.slice(0, 2), // Limit high priority to prevent timeout
                 ...categorizedLinks.medium_priority.slice(0, 2) // Limit medium priority to prevent timeout
             ];
+
+            console.log('Pages to scrape: ', pagesToScrape.length);
         } else {
-            const pagesToScrape = [
+            pagesToScrape = [
                 ...categorizedLinks.high_priority,
                 ...categorizedLinks.medium_priority
             ];
+
+            console.log('Pages to scrape: ', pagesToScrape.length);
         }
 
         console.log(`Scraping ${pagesToScrape.length} high and medium priority pages...`);
