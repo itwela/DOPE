@@ -7,6 +7,8 @@ import { useLLM } from "../contexts/LLMContext"
 import { useToastMessage } from "../contexts/ToastMessageContext"
 import { classifyImagesForOntologyGemini, extractBrandColorsGemini, generateCampaignStrategies } from "../services/geminiService"
 import { usePostcard } from "../contexts/PostcardContext"
+import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ClassifiedImage {
   url: string;
@@ -14,9 +16,14 @@ interface ClassifiedImage {
   [key: string]: unknown;
 }
 
-export const GenerationManager = () => {
+interface GenerationManagerProps {
+  url?: string;
+  isValidUrl?: boolean;
+}
+
+export const GenerationManager = ({ url, isValidUrl }: GenerationManagerProps) => {
   const { selectedCompany, setScreenshotPath, setBrandColors, setClassifiedImages, setCampaignElements } = useLLM();
-  const { categories } = usePostcard();
+  const { categories, demoMode } = usePostcard();
   const { setToastMessage } = useToastMessage();
   const [loading, setLoading] = useState(false);
   const [strategyLoading, setStrategyLoading] = useState(false);
@@ -34,6 +41,13 @@ export const GenerationManager = () => {
       );
       
       if (result?.aggregatedData) {
+
+        /* --------------------------------------------------------------------------------------------------------------
+
+        NOTE Getting the web scraped data
+
+        -------------------------------------------------------------------------------------------------------------- */
+
         // IMMEDIATELY update UI with scraped data
         setCampaignElements({
           ...result.aggregatedData,
@@ -78,6 +92,12 @@ export const GenerationManager = () => {
           brandColors: extractedBrandColors
         }));
 
+        /* --------------------------------------------------------------------------------------------------------------
+
+        NOTE Getting the campaign strategies
+
+        -------------------------------------------------------------------------------------------------------------- */
+
         // Now start campaign strategy loading
         setStrategyLoading(true);
         setProgressMessage("Generating campaign strategies...");
@@ -96,6 +116,8 @@ export const GenerationManager = () => {
         }));
         
         setToastMessage("🎉 Campaign generation complete! Check the results below.");
+
+        
       }
       
       // Set screenshot path in LLM context
@@ -124,10 +146,35 @@ export const GenerationManager = () => {
   };
 
   return (
-    <div onClick={handleStart} className="p-1">
-      <WrapButton>
-        <span>{getButtonText()}</span>
-      </WrapButton>
+    <div onClick={handleStart} className="p-1 w-max place-self-center">
+
+      {demoMode && (
+        <WrapButton>
+          <span className="select-none">{getButtonText()}</span>
+        </WrapButton>
+      )}
+
+      {!demoMode && (
+          <button
+          type="button"
+          className={cn(
+              "rounded-lg p-2 bg-black/5 dark:bg-white/5",
+              "hover:bg-[#EA1D2E] dark:hover:bg-[#EA1D2E] focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:ring-blue-500"
+          )}
+          aria-label="Send message"
+          disabled={!url.trim() || !isValidUrl}
+      >
+          <ArrowRight
+              className={cn(
+                  "w-4 h-4 dark:text-white transition-opacity duration-200",
+                  url.trim() && isValidUrl
+                      ? "opacity-100"
+                      : "opacity-30"
+              )}
+          />
+      </button>
+      )}
+
     </div>
   )
 } 

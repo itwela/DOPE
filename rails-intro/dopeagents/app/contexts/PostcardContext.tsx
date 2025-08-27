@@ -16,6 +16,8 @@ export interface PostcardContextType {
     width: number;
     height: number;
   };
+  demoMode: boolean;
+  setDemoMode: (demoMode: boolean) => void;
 }
 
 const PostcardContext = createContext<PostcardContextType | null>(null);
@@ -86,7 +88,7 @@ export const PostcardProvider: React.FC<PostcardProviderProps> = ({ children }) 
   ];
 
   const [selectedCategory, setSelectedCategory] = useState<PostcardCategory | null>(null);
-
+  const [demoMode, setDemoMode] = useState(false);
   // Standard postcard dimensions (landscape orientation)
   const postcardDimensions = {
     width: 900,
@@ -98,7 +100,9 @@ export const PostcardProvider: React.FC<PostcardProviderProps> = ({ children }) 
       categories,
       selectedCategory,
       setSelectedCategory,
-      postcardDimensions
+      postcardDimensions,
+      demoMode,
+      setDemoMode
     }}>
       {children}
     </PostcardContext.Provider>

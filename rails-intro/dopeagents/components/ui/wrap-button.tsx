@@ -45,15 +45,15 @@ const WrapButton: React.FC<WrapButtonProps> = ({
             className
           )}
         >
-          <div className="border border-[#3B3A3A] bg-[#ec1414]  h-[43px] rounded-full flex items-center justify-center text-white">
-            <Globe className="mx-2 animate-spin " />
-            <p className="font-medium tracking-tight mr-3">
+          <div className="border border-[#3B3A3A] bg-[#ec1414]  h-[35px] rounded-full flex items-center justify-center text-white">
+            <Globe size={20} className="mx-2 animate-spin " />
+            <p className="text-sm font-bold tracking-tight mr-3">
               {children ? children : "Get Started"}
             </p>
           </div>
           <div className="text-[#3b3a3a] group-hover:ml-2  ease-in-out transition-all size-[26px] flex items-center justify-center rounded-full border-2 border-[#3b3a3a]  ">
             <ArrowRight
-              size={18}
+              size={15}
               className="group-hover:rotate-45 ease-in-out transition-all "
             />
           </div>

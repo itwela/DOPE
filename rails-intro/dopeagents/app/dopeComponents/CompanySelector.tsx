@@ -10,13 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select'
+import AiInput from './AiInput';
+import { usePostcard } from '../contexts/PostcardContext';
+import { motion } from 'framer-motion';
 
 const styles = {
   selectorContainer: {
     padding: '15px',
-    background: '#0a0a0a',
-    borderRadius: '8px',
-    border: '1px solid #1a1a1a',
   },
   label: {
     display: 'block',
@@ -59,7 +59,7 @@ export const CompanyInput: React.FC = () => {
 const CompanySelector: React.FC = () => {
   const { testCompanies, loading, setSelectedCompany, selectedCompany } = useLLM();
   const { setInput, input } = useLLM();
-
+  const { demoMode } = usePostcard();
   // Add handler for custom company input
   // const handleCustomCompany = (company: any) => {
   //   setSelectedCompany(company);
@@ -71,7 +71,6 @@ const CompanySelector: React.FC = () => {
   // };
 
   // Toggle between demo and normal mode
-  const [demoMode, setDemoMode] = useState(false);
 
   const handleSelectCompany = (value: string) => {
     const companyId = parseInt(value, 10);
@@ -90,38 +89,15 @@ const CompanySelector: React.FC = () => {
 
   return (
     <div style={styles.selectorContainer}>
-      {/* Toggle for Demo/Normal mode */}
-      <div style={{ display: 'flex', alignItems: 'center', alignContent: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
-        <div>
-          <p>Mode:</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexDirection: 'row-reverse' }}>
-          <span
-            style={{ color: demoMode ? '#ff3f17' : '#d4d4d4', fontWeight: demoMode ? 700 : 400, cursor: 'pointer', order: 2 }}
-            onClick={() => setDemoMode(true)}
-          >
-            Demo Mode
-          </span>
-          <label style={{ display: 'inline-block', width: 32, height: 18, position: 'relative', cursor: 'pointer', order: 1 }}>
-            <input type="checkbox" checked={!demoMode} onChange={() => setDemoMode(d => !d)} style={{ display: 'none' }} />
-            <span style={{ position: 'absolute', left: 0, top: 0, width: 32, height: 18, background: demoMode ? '#333' : '#ff3f17', borderRadius: 9, transition: 'background 0.2s' }}></span>
-            <span style={{ position: 'absolute', left: demoMode ? 2 : 16, top: 2, width: 14, height: 14, background: '#fff', borderRadius: '50%', transition: 'left 0.2s' }}></span>
-          </label>
-          <span
-            style={{ color: !demoMode ? '#ff3f17' : '#d4d4d4', fontWeight: !demoMode ? 700 : 400, cursor: 'pointer', order: 0 }}
-            onClick={() => setDemoMode(false)}
-          >
-            URL Mode
-          </span>
-        </div>
-      </div>
-
-      <div style={{ height: 1, background: '#ff3f17', borderRadius: 2, margin: '16px 0' }} />
-
-
       {/* Render CompanyInput or selector based on mode */}
       {demoMode ? (
         <>
+
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.618, ease: [0.23, 1.01, 0.32, 1] }}
+          >
           <label htmlFor="company-selector" style={styles.label}>
             {selectedCompany ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -166,9 +142,17 @@ const CompanySelector: React.FC = () => {
               </div>
             </div>
           )}
+          </motion.div>
         </>
       ) : (
-        <CompanyInput />
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.618, ease: [0.23, 1.01, 0.32, 1] }}
+        >
+          <AiInput/>
+        </motion.div>
+        // <CompanyInput />
       )}
     </div>
   );

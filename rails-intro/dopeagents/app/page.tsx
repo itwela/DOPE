@@ -6,11 +6,14 @@ import { LLMProvider, useLLM } from './contexts/LLMContext';
 import { styles, stylesheet } from './styles/AppStyles';
 import CompanySelector from './dopeComponents/CompanySelector';
 import { ToastMessageProvider } from './contexts/ToastMessageContext';
-import { PostcardProvider } from './contexts/PostcardContext';
+import { PostcardProvider, usePostcard } from './contexts/PostcardContext';
 import { setDefaultOpenAIKey, setOpenAIAPI } from '@openai/agents';
 import { GenerationManager } from './dopeComponents/GenerationManager';
 import GraphicBuilder from './dopeComponents/GraphicBuilder';
 import { motion } from 'framer-motion';
+import ModeSelector from './dopeComponents/ModeSelector';
+import { GradientBackground } from '@/components/ui/gradient-background';
+
 
 interface Stats {
   discoveredLinks: number;
@@ -54,6 +57,7 @@ const LLMApp: React.FC = () => {
 
 
   const { brandColors, classifiedImages, campaignElements } = useLLM();
+  const { demoMode } = usePostcard();
 
   // Cast campaignElements to the correct type
   const campaignElementsTyped = campaignElements as CampaignElements;
@@ -475,20 +479,50 @@ const LLMApp: React.FC = () => {
   return (
     <>
       <style>{stylesheet}</style>
-      <div className='w-full h-max gap-5 flex flex-col items-center justify-center' style={{ backgroundColor: '#0f0f0f', minHeight: '100vh' }}>
-        <div style={{...styles.app, backgroundColor: '#0f0f0f'}} className="w-full h-max flex flex-col">
-          
+      <div className='w-full min-h-screen gap-5 flex flex-col items-center justify-center relative' style={{ backgroundColor: 'transparent' }}>
+        <div style={{...styles.app, backgroundColor: 'transparent'}} className="w-full h-max flex flex-col">
+        
+        <div className='fixed top-0 left-0 w-full h-full z-[-1]' style={{ height: '100vh', minHeight: '100%' }}>
+          <GradientBackground
+            className="from-[#212121] via-[#42080C] to-[#141414]"
+            transition={{ duration: 16.18, ease: 'easeInOut', repeat: Infinity }}
+          />
+        </div>
+
           {/* NOTE - Header */}
-          <header style={styles.appHeader} className="w-full">
-            <h1 style={styles.appHeaderH1}>DOPE LLM</h1>
-            <p style={styles.appHeaderP}>Testing the DOPE LLM - Tools, Performance, Etc.</p>
-          </header>
+          <motion.header 
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.618, ease: [0.23, 1.01, 0.32, 1] }}
+          style={styles.appHeader} className="w-full">
+            <h1 className='select-none' style={styles.appHeaderH1}>DOPE LLM</h1>
+            <p className="text-xs select-none" style={styles.appHeaderP}>Testing the DOPE LLM - Tools, Performance, Etc.</p>
+            <div className="flex items-center justify-center my-4">
+              <ModeSelector />
+            </div>
+          </motion.header>
 
           {/* NOTE - Main */}
           <main style={styles.appMain} className="w-full space-y-1">
             
-            <CompanySelector/>
-            <GenerationManager/>
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.618 * 2, ease: [0.23, 1.01, 0.32, 1] }}
+            >
+              <CompanySelector/>
+            </motion.div>
+              
+            {demoMode && (
+              <motion.div
+                initial={{ opacity: 0, y: 32 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.618 * 3, ease: [0.23, 1.01, 0.32, 1] }}
+              >
+              {/* button to start generation */}
+              <GenerationManager/>
+              </motion.div>
+            )}  
         
             {/* Graphic Builder */}
             
@@ -498,10 +532,10 @@ const LLMApp: React.FC = () => {
 
 
 
+        <GraphicBuilder />
         {typeof campaignElements === 'object' && campaignElements !== null && (
           <div className='gap-5 w-full'>
 
-            <GraphicBuilder />
             
             {/* Campaign Elements */}
             <div style={{ display: 'flex', gap: 24, margin: '32px auto', maxWidth: 1200 }}>

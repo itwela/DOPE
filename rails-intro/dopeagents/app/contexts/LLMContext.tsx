@@ -109,8 +109,10 @@ export const LLMProvider: React.FC<LLMProviderProps> = ({ children }) => {
       ];
       
       setTestCompanies(companies);
-      setToastMessage('✅ Companies loaded successfully!');
+      // REVIEW
+      // setToastMessage('✅ Companies loaded successfully!');
     } catch (error) {
+      // REVIEW
       setToastMessage(`❌ Error loading companies: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(false);

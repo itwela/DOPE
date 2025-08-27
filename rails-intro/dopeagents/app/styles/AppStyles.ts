@@ -26,7 +26,6 @@ export const styles = {
   },
   appHeaderP: {
     margin: '5px 0 0 0',
-    fontSize: '0.9rem',
     opacity: 0.9
   },
   appMain: {
@@ -199,13 +198,13 @@ export const styles = {
 // CSS-in-JS stylesheet for hover effects and complex selectors
 export const stylesheet = `
   body {
-    background-color: #0f0f0f !important;
+    background-color: transparent !important;
     margin: 0;
     padding: 0;
   }
   
   html {
-    background-color: #0f0f0f !important;
+    background-color: transparent !important;
   }
   
   .form-group input:focus {
