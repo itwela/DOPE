@@ -5,12 +5,29 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
+export interface Agent {
+    _id: Id<"agents">;
+    _creationTime: number;
+    name: string;
+    description: string;
+    instructions: string;
+    model: string;
+    temperature: number;
+    isDefault?: boolean;
+}
+
+export interface Message {
+    role: "user" | "assistant";
+    content: string;
+    timestamp: number;
+}
+
 interface AgentContextType {
-    agents: unknown[];
-    currentAgent: unknown;
-    setCurrentAgent: (agent: unknown) => void;
+    agents: Agent[];
+    currentAgent: Agent | null;
+    setCurrentAgent: (agent: Agent) => void;
     conversationId: Id<"conversations"> | null;
-    messages: unknown[];
+    messages: Message[];
     inputMessage: string;
     setInputMessage: (message: string) => void;
     isLoading: boolean;
@@ -24,10 +41,10 @@ interface AgentProviderProps {
 }
 
 export default function AgentProvider({ children }: AgentProviderProps) {
-    const [agents, setAgents] = useState<unknown[]>([]);
-    const [currentAgent, setCurrentAgent] = useState<unknown>(null);
+    const [agents, setAgents] = useState<Agent[]>([]);
+    const [currentAgent, setCurrentAgent] = useState<Agent | null>(null);
     const [conversationId, setConversationId] = useState<Id<"conversations"> | null>(null);
-    const [messages, setMessages] = useState<unknown[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -84,9 +101,9 @@ export default function AgentProvider({ children }: AgentProviderProps) {
             // For now, just add a simple response from Steve
             // Later you can integrate with OpenAI or other AI services
             setTimeout(async () => {
-                const response = currentAgent.name === "Steve" 
-                    ? `Hey! I'm Steve. You said: "${userMessage}". I'm here to help, but I'm still learning how to respond properly!`
-                    : `Hi there! I'm Juno. You said: "${userMessage}". Let's get creative and explore some innovative ideas together!`;
+                            const response = currentAgent?.name === "Steve" 
+                ? `Hey! I'm Steve. You said: "${userMessage}". I'm here to help, but I'm still learning how to respond properly!`
+                : `Hi there! I'm Juno. You said: "${userMessage}". Let's get creative and explore some innovative ideas together!`;
                     
                 await addMessage({
                     conversationId,
