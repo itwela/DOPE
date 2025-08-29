@@ -1,0 +1,31 @@
+{
+  "employee_id": "E-ORP-0001",
+  "name": "Oriana Nazareth Penaloza Ortega",
+  "assessment_date": "2025-03-07",
+  "all34": [
+    "Deliberative","Analytical","Focus","Competition","Intellection",
+    "Command","Strategic","Achiever","Relator","Discipline"
+  ],
+  "lead_domain": "Executing",
+  "theme_domains": {
+    "Executing": ["Deliberative","Focus","Achiever","Discipline","Arranger","Responsibility","Consistency","Restorative","Belief"],
+    "Influencing": ["Competition","Command","Self-Assurance","Maximizer","Significance","Activator","Communication","Woo"],
+    "Relationship Building": ["Relator","Individualization","Connectedness","Developer","Empathy","Adaptability","Harmony","Includer","Positivity"],
+    "Strategic Thinking": ["Analytical","Intellection","Strategic","Learner","Input","Context","Ideation","Futuristic"]
+  },
+  "how_to_coach": "Give time/space for analysis; invite her to outline risks and options before committing. Set clear success criteria and timelines—she thrives when goals are explicit and measurable.",
+  "best_collab_with": "Pair with high-Discipline/Arranger partners for structured delivery, or Ideation/Futuristic partners when you want Oriana to stress-test novel paths and pick the best route.",
+  "watchouts": "May be perceived as slow or distant while gathering facts; competitive drive can intimidate others. Avoid forcing snap decisions without data.",
+  "communication_tips": "Lead with purpose and constraints, then options. Share metrics and risk tradeoffs. Asynchronous docs > long meetings; summarize decisions and next steps clearly.",
+  "motivators": ["Clear goals and scoreboards", "Autonomy to assess risk", "Challenging problems with visible impact"],
+  "demotivators": ["Vague expectations", "Overly emotional debates without evidence", "Constant priority churn"],
+  "evidence_quotes": [
+    {"quote": "Stop, listen and assess before taking action.", "section": "Deliberative — How you can thrive"},
+    {"quote": "Use your logical, objective approach to make important decisions.", "section": "Analytical — Take action"},
+    {"quote": "Set specific goals with timelines to motivate yourself.", "section": "Focus — Take action"},
+    {"quote": "Aim for first place so you'll always finish strong.", "section": "Competition — Take action"},
+    {"quote": "You lead with Executing CliftonStrengths themes.", "section": "Domains overview"}
+  ],
+  "source_doc_url": "local:/Support - Penaloza_Ortega-Oriana_Nazareth-ALL_34.pdf",
+  "source_provenance": "CliftonStrengths 34 report (Gallup)."
+}

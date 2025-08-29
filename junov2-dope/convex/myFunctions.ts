@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-
+  
 // Get all default agents (create if they don't exist)
 export const getDefaultAgents = mutation({
   args: {},
@@ -139,5 +139,58 @@ export const addMessage = mutation({
     });
     
     return null;
+  },
+});
+
+// Update agent configurations
+export const updateAgentConfigurations = mutation({
+  args: {},
+  returns: v.object({
+    message: v.string(),
+    success: v.boolean()
+  }),
+  handler: async (ctx) => {
+    try {
+      // Update Steve's configuration
+      const steve = await ctx.db
+        .query("agents")
+        .filter((q) => q.eq(q.field("name"), "Steve"))
+        .first();
+
+      if (steve) {
+        await ctx.db.patch(steve._id, {
+          description: "Your AI consultant for DOPE Marketing. I know the team well and can help with CliftonStrengths insights, strategic guidance, and team collaboration.",
+          instructions: "You are Steve, a friendly AI consultant for DOPE Marketing who knows the team well and provides strategic guidance through natural conversation.",
+          model: "gpt-4o-mini",
+          temperature: 0.7,
+        });
+      }
+
+      // Update Juno's configuration
+      const juno = await ctx.db
+        .query("agents")
+        .filter((q) => q.eq(q.field("name"), "Juno"))
+        .first();
+
+      if (juno) {
+        await ctx.db.patch(juno._id, {
+          description: "Your creative AI assistant who loves exploring innovative ideas and helping with creative projects.",
+          instructions: "You are Juno, a creative and imaginative AI assistant focused on brainstorming and innovative solutions.",
+          model: "gpt-4o-mini",
+          temperature: 0.9,
+        });
+      }
+
+      return {
+        message: "Agent configurations updated successfully!",
+        success: true
+      };
+    } catch (error) {
+      console.error("Error updating agent configurations:", error);
+      return {
+        message: `Failed to update agent configurations: ${error}`,
+        success: false
+      };
+    }
   },
 });

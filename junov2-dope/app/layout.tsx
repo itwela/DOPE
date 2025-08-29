@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-import AgentProvider from "./providers/agentProvider";
+import ConvexClientProvider from "@/app/providers/ConvexClientProvider";
+import AgentProvider from "./providers/AgentProvider";
+import ToastProvider from "./providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "DOPE Agent Playground",
@@ -23,7 +24,9 @@ export default function RootLayout({
       >
         <ConvexClientProvider>
           <AgentProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </AgentProvider>
         </ConvexClientProvider>
       </body>

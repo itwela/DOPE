@@ -12,11 +12,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.22",
+    "@convex-dev/agent": "^0.2.5",
     "@convex-dev/auth": "^0.0.81",
+    "@convex-dev/rag": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.16",
+    "clsx": "^2.1.1",
     "convex": "^1.26.0",
+    "motion": "^12.23.12",
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "tailwind-merge": "^3.3.1",
     "vercel": "^46.0.5"
   },
   "devDependencies": {
