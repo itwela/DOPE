@@ -3,34 +3,10 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Agent } from "../providers/AgentProvider";
 import { Id } from "../../convex/_generated/dataModel";
 import EmployeeProfilesModal from "./EmployeeProfilesModal";
-
-interface KnowledgeBaseModalProps {
-  agent: Agent | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-interface KnowledgeBaseEntry {
-  _id: Id<"knowledgeBaseEntries">;
-  _creationTime: number;
-  agentId: Id<"agents">;
-  type: "file" | "text";
-  title: string;
-  content?: string;
-  fileId?: Id<"_storage">;
-  fileName?: string;
-  fileType?: string;
-  ragEntryId?: string;
-  metadata?: Record<string, unknown>;
-  createdAt: number;
-  updatedAt: number;
-  preview: string;
-}
-
-type ModalMode = 'list' | 'add-text' | 'add-file' | 'view';
+import { formatTranscriptForKb_Gemini } from "../actions";
+import { KnowledgeBaseModalProps, KnowledgeBaseEntry, ModalMode } from "./componetInterfaces";
 
 export default function KnowledgeBaseModal({ agent, isOpen, onClose }: KnowledgeBaseModalProps) {
   const [mode, setMode] = useState<ModalMode>('list');
@@ -39,7 +15,11 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
   const [textTitle, setTextTitle] = useState("");
   const [textContent, setTextContent] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  
+  const [transcriptContent, setTranscriptContent] = useState("");
+  const [transcriptObjectForKb, setTranscriptObjectForKb] = useState<null | Record<string, unknown>>(null);
+  const [isFormatting, setIsFormatting] = useState(false);
+  const [formatError, setFormatError] = useState<string | null>(null);
+
   // Employee Profiles Modal state
   const [isEmployeeProfilesModalOpen, setIsEmployeeProfilesModalOpen] = useState(false);
 
@@ -48,10 +28,11 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     api.knowledgeBase.getKnowledgeBaseEntries,
     agent ? { agentId: agent._id } : "skip"
   );
-  
+
   const createTextEntry = useAction(api.knowledgeBase.createTextEntry);
-  const deleteEntry = useMutation(api.knowledgeBase.deleteKnowledgeBaseEntry);
   const uploadFile = useAction(api.knowledgeBase.uploadFileAndCreateEntry);
+  const deleteEntry = useMutation(api.knowledgeBase.deleteKnowledgeBaseEntry);
+  const onlyInsertIntoKb = useMutation(api.knowledgeBase.addToKnowledgeBaseNoRag);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -61,8 +42,28 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
       setSearchQuery("");
       setTextTitle("");
       setTextContent("");
+      setTranscriptContent("");
+      setTranscriptObjectForKb(null);
+      setIsFormatting(false);
+      setFormatError(null);
     }
   }, [isOpen]);
+
+  const handleFormatTranscript = async () => {
+    if (!transcriptContent.trim() || isFormatting) return;
+    setFormatError(null);
+    setIsFormatting(true);
+    try {
+      const formattedTranscript = await formatTranscriptForKb_Gemini(transcriptContent);
+      const formattedTranscriptObject = JSON.parse(formattedTranscript as string);
+      setTranscriptObjectForKb(formattedTranscriptObject);
+    } catch (err) {
+      console.error("Failed to format transcript:", err);
+      setFormatError("Failed to format transcript. Please try again.");
+    } finally {
+      setIsFormatting(false);
+    }
+  }
 
   const handleClose = () => {
     setMode('list');
@@ -70,6 +71,10 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     setSearchQuery("");
     setTextTitle("");
     setTextContent("");
+    setTranscriptContent("");
+    setTranscriptObjectForKb(null);
+    setIsFormatting(false);
+    setFormatError(null);
     onClose();
     console.log('tt debug', textTitle)
   };
@@ -79,25 +84,61 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     setSelectedEntry(null);
     setTextTitle("");
     setTextContent("");
+    setTranscriptContent("");
+    setTranscriptObjectForKb(null);
+    setIsFormatting(false);
+    setFormatError(null);
   };
 
   const handleCreateTextEntry = async () => {
     if (!agent || !textContent.trim()) return;
-    
+
     try {
       await createTextEntry({
         agentId: agent._id,
         title: `${agent.name.slice(0, 4)}_${new Date().getTime()}_txt`,
         content: textContent.trim(),
       });
-      
+
       handleBackToList();
     } catch (error) {
       console.error("Failed to create text entry:", error);
     }
   };
 
+  const handleCreateTranscriptEntry = async () => {
+    if (!agent || !transcriptContent.trim()) return;
 
+    try {
+
+      await onlyInsertIntoKb({
+        agentId: agent._id,
+        title: `${transcriptObjectForKb?.title}_${new Date().getTime()}`,
+        text: transcriptContent.trim(),
+        metadata: {
+          use: "interview",
+          ...transcriptObjectForKb,
+        },
+      });
+
+      // pause this for now
+      // await createTextEntry({
+      //   agentId: agent._id,
+      //   title: `${agent.name.slice(0, 4)}_${new Date().getTime()}_txt`,
+      //   content: transcriptContent.trim(),
+      //   metadata: {
+      //     transcriptId: `DOPE_MARKETING_${new Date().getTime()}_ts`,
+      //     textLength: transcriptContent.trim().length,
+      //     type: "transcript",
+      //     ...transcriptObjectForKb,
+      //   }
+      // });
+
+      handleBackToList();
+    } catch (error) {
+      console.error("Failed to create transcript entry:", error);
+    }
+  }
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -112,7 +153,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         fileName: file.name,
         fileType: file.type,
       });
-      
+
       handleBackToList();
     } catch (error) {
       console.error("Failed to upload file:", error);
@@ -142,8 +183,8 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
   if (!isOpen || !agent) return null;
 
   const entries = knowledgeBaseEntries || [];
-  const filteredEntries = entries.filter(entry =>
-    !searchQuery || 
+  const filteredEntries = entries.filter((entry: KnowledgeBaseEntry) =>
+    !searchQuery ||
     entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     entry.preview.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -188,13 +229,21 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     </svg>
   );
 
+  const transcriptIcon = (
+    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 10v2a7 7 0 01-14 0v-2" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19v2m-4 0h8" />
+    </svg>
+  );
+
   const renderHeader = () => (
     <>
 
-    <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-start gap-3">
-            
+
             {mode !== 'list' && (
 
               <button
@@ -210,9 +259,10 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
             </div>
             <div>
               <h2 className="text-sm font-bold text-gray-900">
-                {mode === 'list' ? 'Knowledge Base' : 
-                mode === 'add-text' ? 'Add Text Entry' :
-                mode === 'view' ? selectedEntry?.title || 'View Entry' : 'Knowledge Base'}
+                {mode === 'list' ? 'Knowledge Base' :
+                  mode === 'add-text' ? 'Add Text Entry' :
+                    mode === 'add-transcript' ? 'Add Transcript' :
+                      mode === 'view' ? selectedEntry?.title || 'View Entry' : 'Knowledge Base'}
               </h2>
               <p className="text-sm text-gray-600">{agent.name}</p>
             </div>
@@ -220,7 +270,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
-          > 
+          >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -230,7 +280,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         <div>
           <p className="text-sm text-gray-600">{`You have 2 ways to add knowledge to your agent, either by uploading a file or by adding the knowledge directly via text!`}</p>
         </div>
-    </div>
+      </div>
 
     </>
   );
@@ -260,7 +310,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
             {textIcon}
             Add Text
           </button>
-          
+
           <label className="flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer">
             {uploadIcon}
             Upload File
@@ -272,7 +322,15 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
               accept=".txt,.md,.pdf,.doc,.docx,.json,.csv"
             />
           </label>
-          
+
+          <button
+            onClick={() => { setTranscriptObjectForKb(null); setTranscriptContent(""); setIsFormatting(false); setFormatError(null); setMode('add-transcript'); }}
+            className="flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            {transcriptIcon}
+            Add Transcript
+          </button>
+
           {/* REVIEW ARCHIVED FOR NOW, THIS ADDS EMPLOYEE PROFILES TO THE KNOWLEDGE BASE */}
           {/* <button
             onClick={() => setIsEmployeeProfilesModalOpen(true)}
@@ -301,7 +359,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3">
-          {filteredEntries.map((entry) => (
+          {filteredEntries.map((entry: KnowledgeBaseEntry) => (
             <div
               key={entry._id}
               onClick={() => handleSelectEntry(entry)}
@@ -351,7 +409,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
 
   const renderAddTextMode = () => (
     <div className="space-y-6">
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Content
@@ -379,6 +437,73 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         >
           Create Entry
         </button>
+      </div>
+    </div>
+  );
+
+
+  const renderAddTranscriptMode = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Transcript
+          </label>
+          <textarea
+            value={transcriptContent}
+            onChange={(e) => setTranscriptContent(e.target.value)}
+            placeholder="Paste the transcript here..."
+            rows={20}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+          />
+        </div>
+        <div className="relative border border-gray-200 rounded-lg min-h-[320px] flex items-center justify-center bg-gray-50 p-4">
+          {transcriptObjectForKb === null ? (
+            isFormatting ? (
+              <div className="flex flex-col items-center gap-3 text-gray-600">
+                <div className="w-10 h-10 border-4 border-gray-200 border-t-accent rounded-full animate-spin" />
+                <div className="text-sm">Formatting transcript...</div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={handleFormatTranscript}
+                  disabled={!transcriptContent.trim()}
+                  className="px-4 py-2 cursor-pointer bg-accent text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  Format transcript
+                </button>
+                {formatError && (
+                  <div className="text-xs text-red-600 mt-1">{formatError}</div>
+                )}
+              </div>
+            )
+          ) : (
+            <div className="w-full h-full overflow-auto">
+              <h4 className="font-medium text-gray-900 mb-3">Formatted Object</h4>
+              <pre className="text-xs text-gray-800 bg-white rounded-lg p-4 border border-gray-200 whitespace-pre-wrap break-words">
+                {JSON.stringify(transcriptObjectForKb, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-3 justify-end">
+        
+        <button
+          onClick={handleBackToList}
+          className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={() => handleCreateTranscriptEntry()}
+          className="px-4 cursor-pointer py-2 bg-accent text-white hover:bg-green-700 rounded-lg transition-colors"
+        >
+          Add To Knowledge Base - No RAG
+        </button>
+
       </div>
     </div>
   );
@@ -467,7 +592,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
 
         <div className="pt-4 border-t border-gray-200">
           <div className="flex gap-3">
-            <button 
+            <button
               onClick={() => handleDeleteEntry(selectedEntry._id)}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
             >
@@ -486,10 +611,11 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
           <div className="p-6 border-b border-gray-200">
             {renderHeader()}
           </div>
-          
+
           <div className="flex-1 overflow-y-auto p-6">
             {mode === 'list' && renderListMode()}
             {mode === 'add-text' && renderAddTextMode()}
+            {mode === 'add-transcript' && renderAddTranscriptMode()}
             {mode === 'view' && renderViewMode()}
           </div>
         </div>
@@ -509,7 +635,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
           </div>
         )}
       </div>
-      
+
       {/* Employee Profiles Modal */}
       <EmployeeProfilesModal
         isOpen={isEmployeeProfilesModalOpen}

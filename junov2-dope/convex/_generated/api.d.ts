@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as dopeAgents from "../dopeAgents.js";
+import type * as dopeAgentsTools from "../dopeAgentsTools.js";
 import type * as employeeProfiles from "../employeeProfiles.js";
 import type * as http from "../http.js";
 import type * as knowledgeBase from "../knowledgeBase.js";
@@ -32,6 +33,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   dopeAgents: typeof dopeAgents;
+  dopeAgentsTools: typeof dopeAgentsTools;
   employeeProfiles: typeof employeeProfiles;
   http: typeof http;
   knowledgeBase: typeof knowledgeBase;

@@ -22,7 +22,7 @@ export default defineSchema({
   }),
   knowledgeBaseEntries: defineTable({
     agentId: v.id("agents"),
-    type: v.union(v.literal("file"), v.literal("text")),
+    type: v.union(v.literal("file"), v.literal("text"), v.literal("transcript-for-interview")),
     title: v.string(),
     content: v.optional(v.string()), // For text entries
     fileId: v.optional(v.id("_storage")), // For file entries

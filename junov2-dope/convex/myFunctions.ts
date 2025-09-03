@@ -59,6 +59,25 @@ export const getDefaultAgents = mutation({
     }
     agents.push(juno!);
 
+    // Try to find Atlas
+    let atlas = await ctx.db
+      .query("agents")
+      .filter((q) => q.eq(q.field("name"), "Atlas"))
+      .first();
+      
+      
+    if (!atlas) {
+      const atlasId = await ctx.db.insert("agents", {
+        name: "Atlas",
+        description: "An AI assistant focused on strategic planning and decision-making.",
+        instructions: "You are Atlas, a strategic and analytical AI assistant. You excel at analyzing data, making informed decisions, and providing insightful recommendations.",
+        model: "gpt-4",
+        temperature: 0.7,
+        isDefault: true,
+      });
+    }
+    agents.push(atlas!);
+
     return agents;
   },
 });

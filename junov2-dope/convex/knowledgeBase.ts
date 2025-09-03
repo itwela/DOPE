@@ -652,7 +652,7 @@ export const getKnowledgeBaseEntries = query({
     _id: v.id("knowledgeBaseEntries"),
     _creationTime: v.number(),
     agentId: v.id("agents"),
-    type: v.union(v.literal("file"), v.literal("text")),
+    type: v.union(v.literal("file"), v.literal("text"), v.literal("transcript-for-interview")),
     title: v.string(),
     content: v.optional(v.string()),
     fileId: v.optional(v.id("_storage")),
@@ -673,7 +673,7 @@ export const getKnowledgeBaseEntries = query({
 
     return entries.map((entry) => {
       let preview = "";
-      if (entry.type === "text" && entry.content) {
+      if ((entry.type === "text" || entry.type === "transcript-for-interview") && entry.content) {
         const words = entry.content.split(" ").slice(0, 20).join(" ");
         preview = words + (entry.content.split(" ").length > 20 ? "..." : "");
       } else if (entry.type === "file" && entry.fileName) {
@@ -688,8 +688,36 @@ export const getKnowledgeBaseEntries = query({
   },
 });
 
+/* 
+
+Add to knowledge base - not rag
+
+*/ 
+export const addToKnowledgeBaseNoRag = mutation({
+  args: {
+    agentId: v.id("agents"),
+    title: v.string(),
+    text: v.string(),
+    metadata: v.optional(v.record(v.string(), v.any())),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    await ctx.db.insert("knowledgeBaseEntries", {
+      agentId: args.agentId,
+      type: "transcript-for-interview",
+      title: args.title,
+      content: args.text,
+      metadata: args.metadata,
+      createdAt: now,
+      updatedAt: now,
+    });
+    return null;
+  },
+});
+
 /**
- * Delete a knowledge base entry
+ * Delete a knowledge base entry - not rag
  */
 export const deleteKnowledgeBaseEntry = mutation({
   args: {
@@ -757,3 +785,38 @@ async function generateContentHash(text: string): Promise<string> {
   }
   return Math.abs(hash).toString(36);
 }
+
+/**
+ * Get recent transcript entries for interview preparation
+ */
+export const getRecentTranscriptEntries = query({
+  args: {
+    agentId: v.id("agents"),
+    limit: v.optional(v.number()),
+  },
+  returns: v.array(v.object({
+    _id: v.id("knowledgeBaseEntries"),
+    content: v.string(),
+    title: v.string(),
+    createdAt: v.number(),
+  })),
+  handler: async (ctx, args) => {
+    const limit = args.limit || 5;
+    
+    const entries = await ctx.db
+      .query("knowledgeBaseEntries")
+      .withIndex("by_agent", (q) => q.eq("agentId", args.agentId))
+      .filter((q) => q.eq(q.field("type"), "transcript-for-interview"))
+      .order("desc")
+      .take(limit);
+
+    return entries
+      .filter((entry) => entry.content) // Only return entries with content
+      .map((entry) => ({
+        _id: entry._id,
+        content: entry.content!,
+        title: entry.title,
+        createdAt: entry.createdAt,
+      }));
+  },
+});

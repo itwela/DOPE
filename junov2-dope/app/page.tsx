@@ -9,6 +9,9 @@ import EditAgentModal from "./components/EditAgentModal";
 import KnowledgeBaseModal from "./components/KnowledgeBaseModal";
 import EmployeeProfilesModal from "./components/EmployeeProfilesModal";
 import ReactMarkdown from 'react-markdown';
+import { CreateNewAgentButton } from "./components/CreateNewAgentButton";
+import { AgentCard } from "./components/AgentCard";
+import { AbilitiesForAgent } from "./components/WebsiteAnalysisButton";
 
 
 export default function Home() {
@@ -31,6 +34,7 @@ export default function Home() {
     deleteExistingThread,
     threadId,
     startNewThread,
+    handleAgentSelect,
   } = useAgent();
 
   const { showToast } = useToast();
@@ -43,6 +47,10 @@ export default function Home() {
 
   // Employee Profiles Modal state
   const [isEmployeeProfilesModalOpen, setIsEmployeeProfilesModalOpen] = useState(false);
+
+  // Interview Questions state
+  const [interviewQuestions, setInterviewQuestions] = useState<any>(null);
+  const [interviewAnswers, setInterviewAnswers] = useState<{[key: number]: string}>({});
 
   // Thread management state
   const [expandedThreadsAgent, setExpandedThreadsAgent] = useState<string | null>(null);
@@ -116,6 +124,13 @@ export default function Home() {
     }
   };
 
+  const handleAnswerChange = (questionIndex: number, answer: string) => {
+    setInterviewAnswers(prev => ({
+      ...prev,
+      [questionIndex]: answer
+    }));
+  };
+
   // Function to get thread count for a specific agent
   const getThreadCountForAgent = (agentName: string): number => {
     if (!allThreadCounts) return 0;
@@ -166,7 +181,7 @@ export default function Home() {
                 key={agent._id}
                 agent={agent}
                 currentAgent={currentAgent}
-                onSelect={setCurrentAgent}
+                onSelect={handleAgentSelect}
                 onEdit={handleEditAgent}
                 onOpenKnowledgeBase={handleOpenKnowledgeBase}
                 recentThreads={currentAgent?._id === agent._id ? (recentThreads || []) : []}
@@ -181,8 +196,8 @@ export default function Home() {
               />
             ))}
 
-            {/* Create New Agent Button */}
-            {createNewAgentButton()}
+            {/* Create New Agent Button - Currently Is Comming Soon Button */}
+            <CreateNewAgentButton/>
           </div>
         </div>
 
@@ -210,12 +225,12 @@ export default function Home() {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col justify-end">
                 {messages.length === 0 && welcomeMessage ? (
-                  <div className="flex justify-start">
+                  <div className="flex justify-start  flex-col gap-2">
                     <div className="bg-white border border-gray-200 text-gray-900 max-w-md px-4 py-3 rounded-lg">
                       <div className="text-sm font-medium mb-1">{currentAgent.name}</div>
                       <div className="whitespace-pre-wrap">
                         <div className="prose prose-sm max-w-none">
-                          <ReactMarkdown 
+                          <ReactMarkdown
                             components={{
                               a: ({ ...props }) => (
                                 <a {...props} className="text-blue-600 hover:text-blue-800 underline" target="_blank" rel="noopener noreferrer" />
@@ -239,28 +254,104 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    {/* only show in atlas the website analysis button */}
+                    {currentAgent.name === "Atlas" && (
+                      <>
+                        <div className="flex mb-4 max-w-md items-center justify-start gap-2">
+
+                          {/* tool emoji */}
+                          {/* <span>Tools 🛠️: </span> */}
+                          <AbilitiesForAgent setInterviewQuestions={setInterviewQuestions} />
+                        </div>
+
+                        {/* put the interview questions here */}
+                        {interviewQuestions && (
+                          <div className="mt-4 w-full">
+                            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                Questions
+                              </h3>
+                              <p className="text-sm text-gray-600 mb-4">
+                                Based on your website and previous conversations, here are strategic questions to help understand your business better:
+                              </p>
+                              <div className="space-y-4">
+                                {interviewQuestions.questions?.map((q: any, index: number) => (
+                                  <div key={index} className="border-l-4 border-accent pl-4">
+                                    <div className="flex items-start gap-2">
+                                      <span className="bg-accent text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                                        {index + 1}
+                                      </span>
+                                      <div className="flex-1">
+                                        <p className="font-medium text-gray-900 mb-2">{q.question}</p>
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {q.category}
+                                          </span>
+                                          <span className="text-xs text-gray-500">{q.reasoning}</span>
+                                        </div>
+                                        <textarea
+                                          value={interviewAnswers[index] || ""}
+                                          onChange={(e) => handleAnswerChange(index, e.target.value)}
+                                          placeholder="Type your answer here..."
+                                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
+                                          rows={3}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-4 pt-4 border-t border-gray-200">
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => {
+                                      const questionsAndAnswers = interviewQuestions.questions
+                                        ?.map((q: any, i: number) => {
+                                          const answer = interviewAnswers[i];
+                                          return `${i + 1}. ${q.question}\n${answer ? `Answer: ${answer}` : 'Answer: [Not answered yet]'}\n`;
+                                        })
+                                        .join('\n');
+                                      navigator.clipboard.writeText(questionsAndAnswers);
+                                      showToast("Questions and answers copied to clipboard!", "success");
+                                    }}
+                                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                                  >
+                                    📋 Copy Q&A
+                                  </button>
+                                  <button
+                                    onClick={() => setInterviewQuestions(null)}
+                                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                                  >
+                                    ✕ Close
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 ) : null}
 
                 {messages.map((message, index) => {
                   // Check if this is a tool call message (only for assistant messages that start with "Tool:")
                   const isToolCall = message.role === 'assistant' && message.content.startsWith('Tool:');
-                  
+
                   return (
                     <div
                       key={index}
                       className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-md px-4 py-3 rounded-lg relative group ${
-                          message.role === "user"
+                        className={`max-w-md px-4 py-3 rounded-lg relative group ${message.role === "user"
                             ? "bg-accent text-white"
                             : isToolCall
                               ? "bg-blue-50 border border-blue-200 text-blue-800"
                               // : isSystemMessage
                               //   ? "bg-gray-50 border border-gray-200 text-gray-600"
-                                : "bg-white border border-gray-200 text-gray-900"
-                        }`}
+                              : "bg-white border border-gray-200 text-gray-900"
+                          }`}
                       >
                         {/* Copy button - show for all non-user messages */}
                         {message.role !== "user" && (
@@ -285,14 +376,14 @@ export default function Home() {
                               </svg>
                               {currentAgent.name}
                             </>
-                          )  : (
+                          ) : (
                             currentAgent.name
                           )}
                         </div>
                         <div className={message.role !== "user" ? "pr-6" : ""}>
                           {message.role === "assistant" && !isToolCall ? (
                             <div className="prose prose-sm max-w-none">
-                              <ReactMarkdown 
+                              <ReactMarkdown
                                 components={{
                                   // Customize link styling
                                   a: ({ ...props }) => (
@@ -366,9 +457,8 @@ export default function Home() {
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyUp={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder={isLoading ? `${currentAgent.name} is thinking...` : `Message ${currentAgent.name}...`}
-                  className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors ${
-                    isLoading ? 'border-gray-200 bg-gray-50' : 'border-gray-300'
-                  }`}
+                  className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors ${isLoading ? 'border-gray-200 bg-gray-50' : 'border-gray-300'
+                    }`}
                   disabled={isLoading}
                 />
                 <button
@@ -428,16 +518,24 @@ export default function Home() {
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={cancelDeleteThread}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteThread}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Deleting..." : "Delete"}
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
                 </button>
               </div>
             </div>
@@ -448,258 +546,3 @@ export default function Home() {
   );
 }
 
-interface Thread {
-  _id: string;
-  _creationTime: number;
-  userId?: string;
-  title?: string;
-  summary?: string;
-  status: "active" | "archived";
-}
-
-interface AgentCardProps {
-  agent: Agent;
-  currentAgent: Agent | null;
-  onSelect: (agent: Agent) => void;
-  onEdit: (agent: Agent, e: React.MouseEvent) => void;
-  onOpenKnowledgeBase: (agent: Agent, e: React.MouseEvent) => void;
-  recentThreads: Thread[];
-  onSelectThread: (agent: Agent, threadId: string) => void;
-  onDeleteThread: (threadId: string, e: React.MouseEvent, threadTitle?: string) => Promise<void>;
-  onToggleExpanded: (agentId: string, e: React.MouseEvent) => void;
-  currentThreadId: string | null;
-  isExpanded: boolean;
-  threadCount: number;
-  startNewThread: () => void;
-  isLoadingThreads: boolean;
-}
-
-const AgentCard = ({ agent, currentAgent, onSelect, onEdit, onOpenKnowledgeBase, recentThreads, onSelectThread, onDeleteThread, onToggleExpanded, currentThreadId, isExpanded, threadCount, startNewThread, isLoadingThreads }: AgentCardProps) => {
-  const isSelected = currentAgent?._id === agent._id;
-  const isDisabled = agent.name === "Juno"; // Disable Juno
-
-  useEffect(() => {
-    console.log("onEdit", onEdit);
-  }, [recentThreads])
-
-  return (
-    <div
-      onClick={() => !isDisabled && onSelect(agent)}
-      className={`p-4 rounded-lg border-2 transition-all relative group ${
-        isDisabled 
-          ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50' 
-          : isSelected 
-            ? 'border-accent bg-accent/5 cursor-pointer' 
-            : 'border-gray-200 hover:border-gray-300 cursor-pointer'
-      }`}
-    >
-      {/* Action Icons */}
-      <div className="absolute top-3 right-3 flex gap-1">
-        {/* Brain Icon - Knowledge Base */}
-        <button
-          onClick={(e) => !isDisabled && onOpenKnowledgeBase(agent, e)}
-          className={`p-1.5 rounded-md group-hover:opacity-100 transition-all duration-200 ${
-            isDisabled ? 'cursor-not-allowed opacity-30' : 'cursor-pointer'
-          }`}
-          title={isDisabled ? "Coming soon" : "View knowledge base"}
-          disabled={isDisabled}
-        >
-          <svg
-            className={`w-4 h-4 ${isDisabled ? 'text-gray-400' : 'text-accent hover:text-purple-700'}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-            />
-          </svg>
-        </button>
-
-        {/* REVIEW Gear Icon - Edit */}
-        {/* <button
-          onClick={(e) => !isDisabled && onEdit(agent, e)}
-          className={`p-1.5 rounded-md group-hover:opacity-100 transition-all duration-200 ${
-            isDisabled ? 'cursor-not-allowed opacity-30' : 'cursor-pointer'
-          }`}
-          title={isDisabled ? "Coming soon" : "Edit agent"}
-          disabled={isDisabled}
-        >
-          <svg
-            className={`w-4 h-4 ${isDisabled ? 'text-gray-400' : 'text-gray-500 hover:text-gray-700'}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-        </button> */}
-      </div>
-
-      <div className="flex items-start justify-between pr-16">
-        <div className="flex-1">
-          <h3 className="font-medium text-gray-900 flex items-center gap-2">
-            {agent.name}
-            {threadCount > 0 && (
-              <div className="bg-accent font-bold text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center font-medium">
-                {threadCount}
-              </div>
-            )}
-          </h3>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-            {agent.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Recent Threads */}
-      {isSelected && (isLoadingThreads || recentThreads.length > 0) && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-xs font-medium text-gray-700">Recent Conversations</h4>
-            <div className="flex items-center gap-1">
-              {/* Start New Thread Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  startNewThread();
-                }}
-                className="text-xs cursor-pointer bg-accent hover:bg-accent-hover text-white px-2 py-1 rounded font-medium transition-colors flex items-center gap-1"
-                title="Start new conversation"
-              >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                New
-              </button>
-              {recentThreads.length > 3 && (
-                <button
-                  onClick={(e) => onToggleExpanded(agent._id, e)}
-                  className="text-xs text-gray-500 hover:text-gray-700 p-1"
-                  title={isExpanded ? "Show less" : "Show all"}
-                >
-                  {isExpanded ? "⌄" : "•••"}
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="space-y-1">
-            {isLoadingThreads ? (
-              // Loading state
-              <div className="space-y-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="flex items-center justify-between hover:bg-gray-50 rounded-md px-2 py-1">
-                      <div className="flex-1 pr-6">
-                        <div className="h-3 bg-gray-200 rounded w-3/4 mb-1"></div>
-                        <div className="h-2 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                      <div className="w-4 h-4 bg-gray-200 rounded"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              // Actual threads
-              (isExpanded ? recentThreads : recentThreads.slice(0, 3)).map((thread) => {
-                // const isThreadSelected = currentThreadId === thread._id;
-                return (
-                  <AgentThreadItem
-                    agent={agent}
-                    thread={thread}
-                    currentThreadId={currentThreadId}
-                    onSelectThread={onSelectThread}
-                    onDeleteThread={onDeleteThread}
-                    key={thread._id}
-
-                  >
-
-                  </AgentThreadItem>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const AgentThreadItem = ({ agent, thread, currentThreadId, onSelectThread, onDeleteThread }: { agent: Agent, thread: Thread, currentThreadId: string | null, onSelectThread: (agent: Agent, threadId: string) => void, onDeleteThread: (threadId: string, e: React.MouseEvent, threadTitle?: string) => Promise<void> }) => {
-  const isThreadSelected = currentThreadId === thread._id;
-  return (
-    <>
-    <div className={`flex items-center justify-between rounded-md px-2 py-1 transition-colors ${
-        isThreadSelected 
-          ? 'bg-accent text-white' 
-          : 'hover:text-white hover:bg-accent'
-      }`}>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelectThread(agent, thread._id);
-        }}
-        className="cursor-pointer flex-1 pr-6"
-      >
-        <div className="font-medium text-sm truncate">
-          {thread.title || thread.summary || "Untitled conversation"}
-        </div>
-        <div className={`text-xs ${isThreadSelected ? 'text-white/70' : 'text-gray-400'}`}>
-          {thread.status} • {new Date(thread._creationTime).toLocaleDateString()}
-        </div>
-      </div>
-      <span
-        onClick={(e) => onDeleteThread(thread._id, e, thread.title || thread.summary)}
-        className="text-white cursor-pointer w-6 h-6 flex items-center justify-center bg-black/40 rounded-md text-md  pb-1 hover:scale-[1.3]"
-        title="Delete conversation"
-      >
-        ×
-      </span>
-    </div>
-    </>
-  );
-};
-
-const createNewAgentButton = () => {
-
-  const comingSoon = true;
-
-  return (
-    <>
-      {comingSoon ? (
-        <div className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors group">
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-700">Coming Soon</p>
-            <p className="text-xs text-gray-500 mt-1">{"We're working on adding new agents soon!"}</p>
-          </div>
-        </div>
-      ) : (
-        <button className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors group">
-          <div className="text-center">
-            <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:bg-gray-200 transition-colors">
-              <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <p className="text-sm font-medium text-gray-700">Create New Agent</p>
-            <p className="text-xs text-gray-500 mt-1">Build a custom AI assistant</p>
-          </div>
-        </button>
-      )}
-    </>
-  );
-};

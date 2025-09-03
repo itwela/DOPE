@@ -77,6 +77,7 @@ interface AgentContextType {
     loadExistingThread: (agent: Agent, threadId: string) => void;
     deleteExistingThread: (threadId: string) => Promise<void>;
     startNewThread: () => void;
+    handleAgentSelect: (agent: Agent) => void;
 }
 
 const AgentContext = createContext<AgentContextType | null>(null);
@@ -103,6 +104,7 @@ export default function AgentProvider({ children }: AgentProviderProps) {
     const getDefaultAgents = useMutation(api.myFunctions.getDefaultAgents);
     const createSteveThread = useAction(api.dopeAgents.createSteveThread);
     const createJunoThread = useAction(api.dopeAgents.createJunoThread);
+    const createAtlasThread = useAction(api.dopeAgents.createAtlasThread);
     const sendMessage = useMutation(api.dopeAgents.sendMessage);
     const deleteThread = useAction(api.dopeAgents.deleteThread);
     
@@ -133,7 +135,9 @@ export default function AgentProvider({ children }: AgentProviderProps) {
             case "Steve":
                 return "Hello! I'm Steve, your AI leadership consultant for DOPE Marketing. How can I help you today?";
             case "Juno":
-                return "Hey there! I'm Juno, How can I help you today?"; // Revert to original
+                return "Hey there! I'm Juno, How can I help you today?";
+            case "Atlas":
+                return "Hello! I'm Atlas, your business intelligence specialist at DOPE Marketing. I excel at mapping your business landscape through website analysis, call transcript evaluation, and strategic interviews. I'll help you build comprehensive knowledge bases that provide complete visibility into your market, competitors, and opportunities. What area of your business would you like me to investigate and analyze today?";
             default:
                 return `Hello! I'm ${agent.name}. ${agent.description} How can I help you today?`;
         }
@@ -141,40 +145,24 @@ export default function AgentProvider({ children }: AgentProviderProps) {
 
     // Helper function to determine if agent supports AI features
     const isAIAgent = (agentName: string): boolean => {
-        return ["Steve", "Juno"].includes(agentName);
+        return ["Steve", "Juno", "Atlas"].includes(agentName);
     };
 
-    // Create or restore thread when current agent changes
+    // Always show welcome message when switching agents (do not auto-restore threads)
     useEffect(() => {
         if (!currentAgent) return;
-        
-        // Check if we already have a thread for this agent
-        const existingThreadId = agentThreads[currentAgent._id];
-        
-        // Reset state when switching agents
+
+        // Clear any existing thread/message state and show the selected agent's welcome
         setMessages([]);
-        setWelcomeMessage(null);
-        
-        if (existingThreadId) {
-            // Restore existing thread
-            setThreadId(existingThreadId);
-            if (!isAIAgent(currentAgent.name)) {
-                setWelcomeMessage(getAgentWelcome(currentAgent));
-            } else {
-                // For AI agents with existing threads, don't show welcome message
-                setWelcomeMessage(null);
-            }
-        } else {
-            // For all agents (AI and basic), just show welcome message - NO thread creation
-            setThreadId(null);
-            setWelcomeMessage(getAgentWelcome(currentAgent));
-        }
+        setThreadId(null);
+        setWelcomeMessage(getAgentWelcome(currentAgent));
     }, [currentAgent]);
 
     // Update messages when thread messages change (for AI agents with real threads)
     useEffect(() => {
-        if (threadMessages?.page && currentAgent && isAIAgent(currentAgent.name)) {
-            // Convert thread messages to our Message format
+        if (threadMessages?.page && currentAgent && isAIAgent(currentAgent.name) && threadId) {
+            // Only update messages if the threadMessages actually belong to the current threadId
+            // This prevents race conditions where old thread data updates messages after agent switch
             const convertedMessages: Message[] = threadMessages.page
                 .map((msg: ThreadMessage) => {
                     // Extract content from ALL possible formats - NO FILTERING
@@ -227,7 +215,7 @@ export default function AgentProvider({ children }: AgentProviderProps) {
             const sortedMessages = convertedMessages.sort((a, b) => a.timestamp - b.timestamp);
             setMessages(sortedMessages);
         }
-    }, [threadMessages, currentAgent]);
+    }, [threadMessages, currentAgent, threadId]);
 
     /* --------------------------------------------------------------------------
 
@@ -274,6 +262,11 @@ export default function AgentProvider({ children }: AgentProviderProps) {
                     } else if (currentAgent.name === "Juno") {
                         newThreadResult = await createJunoThread({
                             title: `Creative Session with ${currentAgent.name}`,
+                            userId: "user-1" // Placeholder - in real app, get from auth
+                        });
+                    } else if (currentAgent.name === "Atlas") {
+                        newThreadResult = await createAtlasThread({
+                            title: `Business Intelligence with ${currentAgent.name}`,
                             userId: "user-1" // Placeholder - in real app, get from auth
                         });
                     }
@@ -363,6 +356,16 @@ export default function AgentProvider({ children }: AgentProviderProps) {
         setWelcomeMessage(getAgentWelcome(currentAgent));
     };
 
+    const handleAgentSelect = (agent: Agent) => {
+        // Clear any existing thread state when switching agents
+        setMessages([]);
+        setWelcomeMessage(null);
+        setThreadId(null);
+        
+        // Set the new agent
+        setCurrentAgent(agent);
+    };
+
     const value: AgentContextType = {
         agents,
         currentAgent,
@@ -383,6 +386,7 @@ export default function AgentProvider({ children }: AgentProviderProps) {
         loadExistingThread,
         deleteExistingThread,
         startNewThread,
+        handleAgentSelect,
     };
 
     return (
