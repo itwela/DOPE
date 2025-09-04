@@ -189,11 +189,19 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     entry.preview.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getTypeIcon = (type: "file" | "text") => {
+  const getTypeIcon = (type: "file" | "text" | "transcript-for-interview") => {
     if (type === "file") {
       return (
         <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      );
+    } else if (type === "transcript-for-interview") {
+      return (
+        <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 10v2a7 7 0 01-14 0v-2" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19v2m-4 0h8" />
         </svg>
       );
     } else {

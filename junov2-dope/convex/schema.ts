@@ -36,6 +36,9 @@ export default defineSchema({
   employeeProfiles: defineTable({
     employeeId: v.string(), // e.g., "E-ORP-0001"
     name: v.string(),
+    position: v.optional(v.string()), // Job title/position
+    reportsTo: v.optional(v.string()), // Manager/supervisor
+    gender: v.optional(v.string()), // Gender identity
     assessmentDate: v.string(), // ISO date string
     all34: v.array(v.string()), // Top 10 strengths
     leadDomain: v.string(), // Primary domain

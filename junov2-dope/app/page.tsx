@@ -12,13 +12,13 @@ import ReactMarkdown from 'react-markdown';
 import { CreateNewAgentButton } from "./components/CreateNewAgentButton";
 import { AgentCard } from "./components/AgentCard";
 import { AbilitiesForAgent } from "./components/WebsiteAnalysisButton";
+import { InterviewQuestions, InterviewQuestion } from "./components/componetInterfaces";
 
 
 export default function Home() {
   const {
     agents,
     currentAgent,
-    setCurrentAgent,
     messages,
     welcomeMessage,
     inputMessage,
@@ -49,7 +49,7 @@ export default function Home() {
   const [isEmployeeProfilesModalOpen, setIsEmployeeProfilesModalOpen] = useState(false);
 
   // Interview Questions state
-  const [interviewQuestions, setInterviewQuestions] = useState<any>(null);
+  const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestions | null>(null);
   const [interviewAnswers, setInterviewAnswers] = useState<{[key: number]: string}>({});
 
   // Thread management state
@@ -167,7 +167,7 @@ export default function Home() {
     <>
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
 
-        {/* Agent Selector Sidebar */}
+        {/* Agent Selector Sidebar */} 
         <div className="w-[30vw] h-screen bg-white flex flex-col">
           <div className="p-6">
             <h2 className="text-sm font-bold text-[#EB1416]">Your Agents</h2>
@@ -198,6 +198,15 @@ export default function Home() {
 
             {/* Create New Agent Button - Currently Is Comming Soon Button */}
             <CreateNewAgentButton/>
+          </div>
+
+          <div className="p-4 bg-blue-500 w-full h-[100px]">
+            <button 
+              onClick={() => setIsEmployeeProfilesModalOpen(true)}
+              className="bg-white cursor-pointer text-blue-500 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Employee Profiles
+            </button>
           </div>
         </div>
 
@@ -275,7 +284,7 @@ export default function Home() {
                                 Based on your website and previous conversations, here are strategic questions to help understand your business better:
                               </p>
                               <div className="space-y-4">
-                                {interviewQuestions.questions?.map((q: any, index: number) => (
+                                {interviewQuestions.questions?.map((q: InterviewQuestion, index: number) => (
                                   <div key={index} className="border-l-4 border-accent pl-4">
                                     <div className="flex items-start gap-2">
                                       <span className="bg-accent text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
@@ -306,7 +315,7 @@ export default function Home() {
                                   <button
                                     onClick={() => {
                                       const questionsAndAnswers = interviewQuestions.questions
-                                        ?.map((q: any, i: number) => {
+                                        ?.map((q: InterviewQuestion, i: number) => {
                                           const answer = interviewAnswers[i];
                                           return `${i + 1}. ${q.question}\n${answer ? `Answer: ${answer}` : 'Answer: [Not answered yet]'}\n`;
                                         })

@@ -127,6 +127,8 @@ export default function AgentProvider({ children }: AgentProviderProps) {
                 setCurrentAgent(steve);
             }
         });
+
+        console.log("agentThreads", agentThreads);
     }, [getDefaultAgents]);
 
     // Helper function to get agent welcome message
@@ -320,20 +322,31 @@ export default function AgentProvider({ children }: AgentProviderProps) {
         // If it's the same thread and agent, do nothing - keep existing messages
     };
 
-    const deleteExistingThread = async (threadId: string) => {
+    const deleteExistingThread = async (threadIdToDelete: string) => {
         try {
             // Call the Convex API to delete the thread
             await deleteThread({
-                threadId,
+                threadId: threadIdToDelete,
                 userId: "user-1" // Placeholder - in real app, get from auth
             });
             
-            // Clear local state for this thread
-            setMessages([]);
-            // If this was the current thread, clear it
-            if (threadId === threadId) {
+            // If this was the current thread, reset to welcome screen
+            if (threadIdToDelete === threadId) {
                 setThreadId(null);
-                setWelcomeMessage(null);
+                setMessages([]);
+                // Show the welcome message for the current agent (especially important for Atlas)
+                if (currentAgent) {
+                    setWelcomeMessage(getAgentWelcome(currentAgent));
+                }
+                
+                // Remove the thread from agentThreads mapping
+                if (currentAgent) {
+                    setAgentThreads(prev => {
+                        const updated = { ...prev };
+                        delete updated[currentAgent._id];
+                        return updated;
+                    });
+                }
             }
         } catch (error) {
             console.error("Failed to delete thread:", error);

@@ -1,6 +1,6 @@
 "use client";
 
-import { Agent } from "@convex-dev/agent";
+import { Agent } from "../providers/AgentProvider";
 import { Thread } from "./componetInterfaces";
 import React from "react";
 

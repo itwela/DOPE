@@ -6,7 +6,6 @@ const firecrawl = new Firecrawl({ apiKey: process.env.NODE_ENV === "development"
 import { CrawlStatusResponse } from '@mendable/firecrawl-js';
 import { GoogleGenAI } from "@google/genai";
 import OpenAI from "openai";
-import { zodTextFormat } from "openai/helpers/zod";
 
 export const analyzeWebsiteAction = async (url: string) => {
 
@@ -158,8 +157,8 @@ Think of it as a casual chat where you want to really understand their world.`,
     return JSON.parse(content);
 }
 
-export const getTranscriptEntriesAction = async (agentId: string) => {
-    // This would need to be called from a client component that has access to Convex
-    // We'll implement this in the WebsiteAnalysisButton component instead
-    throw new Error("This function should not be called directly from server actions");
-}
+// export const getTranscriptEntriesAction = async (agentId: string) => {
+//     // This would need to be called from a client component that has access to Convex
+//     // We'll implement this in the WebsiteAnalysisButton component instead
+//     throw new Error("This function should not be called directly from server actions");
+// }

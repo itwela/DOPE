@@ -5,10 +5,11 @@ import { analyzeWebsiteAction, createInterviewQuestions } from "../actions";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useAgent } from "../providers/AgentProvider";
+import { InterviewQuestions } from "./componetInterfaces";
 
 
 interface AbilitiesForAgentProps {
-  setInterviewQuestions: (questions: any) => void;
+  setInterviewQuestions: (questions: InterviewQuestions | null) => void;
 }
 
 export const AbilitiesForAgent = ({ setInterviewQuestions }: AbilitiesForAgentProps) => {
@@ -41,6 +42,7 @@ export const AbilitiesForAgent = ({ setInterviewQuestions }: AbilitiesForAgentPr
       const res = await analyzeWebsiteAction(formattedUrl);
       console.log("client response", res);
     } catch (err) {
+      console.error("Analyze website error:", err);
       setAnalyzeError("Failed to analyze the website. Please try again.");
     } finally {
       setIsAnalyzingWebsite(false);
@@ -108,7 +110,7 @@ export const AbilitiesForAgent = ({ setInterviewQuestions }: AbilitiesForAgentPr
             </svg>
             Interview
           </button>
-
+{/* 
           <button
             onClick={() => {
               setSelectedMode("analyze");
@@ -120,7 +122,7 @@ export const AbilitiesForAgent = ({ setInterviewQuestions }: AbilitiesForAgentPr
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h18M12 3a9 9 0 010 18m0-18a9 9 0 000 18M2.5 9h19M2.5 15h19" />
             </svg>
             Analyze my website
-          </button>
+          </button> */}
 
         </>
       )}

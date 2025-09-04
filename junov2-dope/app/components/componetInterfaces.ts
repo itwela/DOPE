@@ -37,7 +37,7 @@ interface KnowledgeBaseEntry {
   _id: Id<"knowledgeBaseEntries">;
   _creationTime: number;
   agentId: Id<"agents">;
-  type: "file" | "text";
+  type: "file" | "text" | "transcript-for-interview";
   title: string;
   content?: string;
   fileId?: Id<"_storage">;
@@ -52,5 +52,14 @@ interface KnowledgeBaseEntry {
 
 type ModalMode = 'list' | 'add-text' | 'add-file' | 'add-transcript' | 'view';
 
+interface InterviewQuestion {
+  question: string;
+  category: string;
+  reasoning: string;
+}
 
-export type { Thread, AgentCardProps, KnowledgeBaseModalProps, KnowledgeBaseEntry, ModalMode };
+interface InterviewQuestions {
+  questions: InterviewQuestion[];
+}
+
+export type { Thread, AgentCardProps, KnowledgeBaseModalProps, KnowledgeBaseEntry, ModalMode, InterviewQuestions, InterviewQuestion };
