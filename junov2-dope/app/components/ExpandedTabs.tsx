@@ -15,7 +15,7 @@ export default function ExpandedTabs({ className = "", onEmployeeProfilesClick }
       setActiveTab('employee-profiles');
       onEmployeeProfilesClick();
     } else {
-      setActiveTab(tabId as any);
+      setActiveTab(tabId as 'employee-profiles' | 'notifications' | 'settings' | 'help' | 'security' | null);
     }
   };
 
