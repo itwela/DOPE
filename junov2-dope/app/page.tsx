@@ -8,6 +8,7 @@ import { useToast } from "./providers/ToastProvider";
 import EditAgentModal from "./components/EditAgentModal";
 import KnowledgeBaseModal from "./components/KnowledgeBaseModal";
 import EmployeeProfilesModal from "./components/EmployeeProfilesModal";
+import ExpandedTabs from "./components/ExpandedTabs";
 import ReactMarkdown from 'react-markdown';
 import { CreateNewAgentButton } from "./components/CreateNewAgentButton";
 import { AgentCard } from "./components/AgentCard";
@@ -200,13 +201,8 @@ export default function Home() {
             <CreateNewAgentButton/>
           </div>
 
-          <div className="p-4 bg-blue-500 w-full h-[100px]">
-            <button 
-              onClick={() => setIsEmployeeProfilesModalOpen(true)}
-              className="bg-white cursor-pointer text-blue-500 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Employee Profiles
-            </button>
+          <div className="p-4 w-full">
+            <ExpandedTabs onEmployeeProfilesClick={() => setIsEmployeeProfilesModalOpen(true)} />
           </div>
         </div>
 

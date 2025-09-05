@@ -320,8 +320,8 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
             </svg>
           </button>
         )}
-        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-          <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
+          <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
           </svg>
         </div>
@@ -359,13 +359,13 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
             placeholder="Search by name or employee ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
           />
         </div>
 
         <button
           onClick={() => setMode('add')}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors text-sm font-medium"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -388,7 +388,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
           </p>
           <button
             onClick={() => setMode('add')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors text-sm"
           >
             Add First Profile
           </button>
@@ -404,8 +404,8 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className="flex-shrink-0 mt-0.5">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-sm">
+                    <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
+                      <span className="text-accent font-semibold text-sm">
                         {profile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </span>
                     </div>
@@ -420,7 +420,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                     </p>
                     <div className="flex flex-wrap gap-1 mb-2">
                       {profile.all34.slice(0, 3).map((strength, index) => (
-                        <span key={index} className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                        <span key={index} className="inline-block bg-accent/10 text-accent px-2 py-1 rounded-full text-xs">
                           {strength}
                         </span>
                       ))}
@@ -459,9 +459,9 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
 
   const renderAddMode = () => (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">JSON Format</h4>
-        <p className="text-xs text-blue-700">
+      <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
+        <h4 className="text-sm font-medium text-accent mb-2">JSON Format</h4>
+        <p className="text-xs text-accent/80">
           Paste your CliftonStrengths profile JSON data below. Make sure it includes required fields like employee_id and name.
         </p>
       </div>
@@ -475,7 +475,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
           onChange={(e) => setJsonInput(e.target.value)}
           placeholder='Paste your employee profile JSON here...'
           rows={15}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none font-mono text-sm"
         />
       </div>
 
@@ -495,7 +495,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
         <button
           onClick={handleCreateProfile}
           disabled={!jsonInput.trim() || isSubmitting}
-          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-accent text-white hover:bg-accent-hover disabled:bg-accent/40 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
         >
           {isSubmitting && (
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -515,8 +515,8 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
       <div className="space-y-6">
         {/* Header Info */}
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-blue-600 font-semibold text-lg">
+          <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+            <span className="text-accent font-semibold text-lg">
               {selectedProfile.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </span>
           </div>
@@ -537,7 +537,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
           <h4 className="font-medium text-gray-900 mb-3">Top 10 Strengths</h4>
           <div className="flex flex-wrap gap-2">
             {selectedProfile.all34.map((strength, index) => (
-              <span key={index} className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              <span key={index} className="inline-block bg-accent/10 text-accent px-3 py-1 rounded-full text-sm font-medium">
                 #{index + 1} {strength}
               </span>
             ))}
@@ -615,7 +615,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
             <h4 className="font-medium text-gray-900 mb-3">Evidence Quotes</h4>
             <div className="space-y-3">
               {selectedProfile.evidenceQuotes.map((quote, index) => (
-                <div key={index} className="border-l-4 border-blue-200 pl-4">
+                <div key={index} className="border-l-4 border-accent/30 pl-4">
                   <blockquote className="text-gray-700 text-sm italic">&quot;{quote.quote}&quot;</blockquote>
                   <cite className="text-xs text-gray-500 mt-1">— {quote.section}</cite>
                 </div>
@@ -638,7 +638,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
           <div className="flex gap-3">
             <button 
               onClick={() => handleEditProfile(selectedProfile)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              className="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors text-sm"
             >
               Edit Profile
             </button>
@@ -660,9 +660,9 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
     return (
       <div className="space-y-6">
         {/* Basic Information */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">Edit Profile Metadata</h4>
-          <p className="text-xs text-blue-700">
+        <div className="bg-accent/5 border border-accent/20 rounded-lg p-4">
+          <h4 className="text-sm font-medium text-accent mb-2">Edit Profile Metadata</h4>
+          <p className="text-xs text-accent/80">
             {`Update the employee's basic information and assessment details below.`}
           </p>
         </div>
@@ -678,7 +678,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                 type="text"
                 value={editFormData.name}
                 onChange={(e) => handleEditFormChange('name', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               />
             </div>
 
@@ -691,7 +691,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                 value={editFormData.position}
                 onChange={(e) => handleEditFormChange('position', e.target.value)}
                 placeholder="e.g., Senior Software Engineer"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               />
             </div>
 
@@ -704,7 +704,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                 value={editFormData.reportsTo}
                 onChange={(e) => handleEditFormChange('reportsTo', e.target.value)}
                 placeholder="e.g., John Smith"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               />
             </div>
 
@@ -717,7 +717,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                 value={editFormData.gender}
                 onChange={(e) => handleEditFormChange('gender', e.target.value)}
                 placeholder="e.g., Female, Male, Non-binary"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               />
             </div>
           </div>
@@ -732,7 +732,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                 type="date"
                 value={editFormData.assessmentDate}
                 onChange={(e) => handleEditFormChange('assessmentDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               />
             </div>
 
@@ -743,7 +743,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               <select
                 value={editFormData.leadDomain}
                 onChange={(e) => handleEditFormChange('leadDomain', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
               >
                 <option value="">Select a domain</option>
                 <option value="Executing">Executing</option>
@@ -765,7 +765,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               value={editFormData.howToCoach}
               onChange={(e) => handleEditFormChange('howToCoach', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
             />
           </div>
 
@@ -777,7 +777,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               value={editFormData.bestCollabWith}
               onChange={(e) => handleEditFormChange('bestCollabWith', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
             />
           </div>
 
@@ -789,7 +789,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               value={editFormData.watchouts}
               onChange={(e) => handleEditFormChange('watchouts', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
             />
           </div>
 
@@ -801,7 +801,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
               value={editFormData.communicationTips}
               onChange={(e) => handleEditFormChange('communicationTips', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
             />
           </div>
         </div>
@@ -814,7 +814,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
             </label>
             <button
               onClick={handleAddMotivator}
-              className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
+              className="text-accent hover:text-accent/80 text-sm flex items-center gap-1"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -829,7 +829,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                   type="text"
                   value={motivator}
                   onChange={(e) => handleUpdateMotivator(index, e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
                   placeholder="Enter motivator..."
                 />
                 <button
@@ -853,7 +853,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
             </label>
             <button
               onClick={handleAddDemotivator}
-              className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
+              className="text-accent hover:text-accent/80 text-sm flex items-center gap-1"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -868,7 +868,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
                   type="text"
                   value={demotivator}
                   onChange={(e) => handleUpdateDemotivator(index, e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
                   placeholder="Enter demotivator..."
                 />
                 <button
@@ -901,7 +901,7 @@ export default function EmployeeProfilesModal({ isOpen, onClose }: EmployeeProfi
           <button
             onClick={handleUpdateProfile}
             disabled={!editFormData.name.trim() || isSubmitting}
-            className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-accent text-white hover:bg-accent-hover disabled:bg-accent/40 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
           >
             {isSubmitting && (
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">

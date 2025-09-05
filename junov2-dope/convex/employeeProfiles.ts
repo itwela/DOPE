@@ -35,6 +35,9 @@ export const createEmployeeProfile = mutation({
       const profileId = await ctx.db.insert("employeeProfiles", {
         employeeId: data.employee_id,
         name: data.name,
+        position: data.position || undefined,
+        reportsTo: data.reports_to || undefined,
+        gender: data.gender || undefined,
         assessmentDate: data.assessment_date || "",
         all34: data.all34 || [],
         leadDomain: data.lead_domain || "",
@@ -80,6 +83,9 @@ export const getAllEmployeeProfiles = query({
     _creationTime: v.number(),
     employeeId: v.string(),
     name: v.string(),
+    position: v.optional(v.string()),
+    reportsTo: v.optional(v.string()),
+    gender: v.optional(v.string()),
     assessmentDate: v.string(),
     all34: v.array(v.string()),
     leadDomain: v.string(),
@@ -127,6 +133,9 @@ export const getEmployeeProfile = query({
       _creationTime: v.number(),
       employeeId: v.string(),
       name: v.string(),
+      position: v.optional(v.string()),
+      reportsTo: v.optional(v.string()),
+      gender: v.optional(v.string()),
       assessmentDate: v.string(),
       all34: v.array(v.string()),
       leadDomain: v.string(),
@@ -206,6 +215,9 @@ export const updateEmployeeProfile = mutation({
       await ctx.db.patch(args.profileId, {
         employeeId: data.employee_id,
         name: data.name,
+        position: data.position || undefined,
+        reportsTo: data.reports_to || undefined,
+        gender: data.gender || undefined,
         assessmentDate: data.assessment_date || "",
         all34: data.all34 || [],
         leadDomain: data.lead_domain || "",
@@ -264,7 +276,7 @@ export const addEmployeeToRAG = internalAction({
 
 Employee ID: ${profile.employeeId}
 Assessment Date: ${profile.assessmentDate}
-Lead Domain: ${profile.leadDomain}
+Lead Domain: ${profile.leadDomain}${profile.position ? `\nPosition: ${profile.position}` : ''}${profile.reportsTo ? `\nReports To: ${profile.reportsTo}` : ''}${profile.gender ? `\nGender: ${profile.gender}` : ''}
 
 TOP 10 STRENGTHS:
 ${profile.all34.map((strength: string, index: number) => `${index + 1}. ${strength}`).join('\n')}
@@ -307,6 +319,9 @@ Document: ${profile.sourceDocUrl}`;
       employeeId: profile.employeeId,
       employeeName: profile.name,
       leadDomain: profile.leadDomain,
+      position: profile.position || "",
+      reportsTo: profile.reportsTo || "",
+      gender: profile.gender || "",
       sourceProfileId: profile._id,
       insertedAt: Date.now(),
     };
@@ -344,6 +359,9 @@ export const getEmployeeProfileInternal = internalQuery({
       _creationTime: v.number(),
       employeeId: v.string(),
       name: v.string(),
+      position: v.optional(v.string()),
+      reportsTo: v.optional(v.string()),
+      gender: v.optional(v.string()),
       assessmentDate: v.string(),
       all34: v.array(v.string()),
       leadDomain: v.string(),
@@ -421,7 +439,7 @@ export const updateEmployeeInRAG = internalAction({
 
 Employee ID: ${profile.employeeId}
 Assessment Date: ${profile.assessmentDate}
-Lead Domain: ${profile.leadDomain}
+Lead Domain: ${profile.leadDomain}${profile.position ? `\nPosition: ${profile.position}` : ''}${profile.reportsTo ? `\nReports To: ${profile.reportsTo}` : ''}${profile.gender ? `\nGender: ${profile.gender}` : ''}
 
 TOP ALL 34 STRENGTHS:
 ${profile.all34.map((strength: string, index: number) => `${index + 1}. ${strength}`).join('\n')}
@@ -464,6 +482,9 @@ Document: ${profile.sourceDocUrl}`;
         employeeId: profile.employeeId,
         employeeName: profile.name,
         leadDomain: profile.leadDomain,
+        position: profile.position || "",
+        reportsTo: profile.reportsTo || "",
+        gender: profile.gender || "",
         sourceProfileId: profile._id,
         updatedAt: Date.now(),
       };
