@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "convex/react";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useRouter } from "next/navigation";
 import { api } from "../convex/_generated/api";
 import { useAgent, Agent } from "./providers/AgentProvider";
 import { useToast } from "./providers/ToastProvider";
@@ -17,6 +19,20 @@ import { InterviewQuestions, InterviewQuestion } from "./components/componetInte
 
 
 export default function Home() {
+  const { signOut } = useAuthActions();
+  const router = useRouter();
+  
+  // Check authentication status (boolean | undefined)
+  const isAuthed = useQuery(api.auth.isAuthenticated, {});
+
+  // Redirect to signin if not authenticated
+  useEffect(() => {
+    if (isAuthed === undefined) return;
+    if (isAuthed === false) {
+      router.push("/signin");
+    }
+  }, [isAuthed, router]);
+
   const {
     agents,
     currentAgent,
@@ -156,12 +172,18 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!currentAgent) {
+  // Show loading state while checking authentication or loading current agent
+  if (isAuthed === undefined || !currentAgent) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
       </div>
     );
+  }
+
+  // Don't render anything if user is not authenticated (redirect will handle this)
+  if (isAuthed === false) {
+    return null;
   }
 
   return (
@@ -211,12 +233,21 @@ export default function Home() {
           {/* Header */}
           <header className="fixed w-full z-50 px-6 py-4 ">
             {/* <header className="fixed w-full z-50 px-6 py-4 backdrop-blur-md "> */}
-            <div className="flex items-center justify-start gap-4">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <h1 className="text-sm font-bold text-[#EB1416]">DOPE Agent Playground</h1>
                 <p className="text-gray-600 text-xs">Chatting with {currentAgent.name}</p>
               </div>
-
+              <button
+                onClick={() => signOut()}
+                className="px-3 py-1.5 text-sm text-gray-600 hover:text-accent hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                title="Sign out"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign out
+              </button>
             </div>
           </header>
 

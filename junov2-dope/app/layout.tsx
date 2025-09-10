@@ -3,6 +3,7 @@ import "./globals.css";
 import ConvexClientProvider from "@/app/providers/ConvexClientProvider";
 import AgentProvider from "./providers/AgentProvider";
 import ToastProvider from "./providers/ToastProvider";
+import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 
 export const metadata: Metadata = {
   title: "DOPE Agent Playground",
@@ -22,13 +23,15 @@ export default function RootLayout({
       <body
         className={`antialiased`}
       >
-        <ConvexClientProvider>
-          <AgentProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </AgentProvider>
-        </ConvexClientProvider>
+        <ConvexAuthNextjsServerProvider>
+          <ConvexClientProvider>
+            <AgentProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </AgentProvider>
+          </ConvexClientProvider>
+        </ConvexAuthNextjsServerProvider>
       </body>
     </html>
   );
