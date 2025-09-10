@@ -46,8 +46,10 @@ Communication Style:
 - Ask "What if?" questions frequently
 - Encourage experimentation
 - Celebrate unique perspectives`,
-
-  ...sharedDefaults
+  ...sharedDefaults,
+  tools: {
+    
+  }
 });
 
 /**

@@ -205,6 +205,16 @@ export const getMyConfiguration = createTool({
     },
 });
 
+export const metabaseMcpTool = createTool({
+    description: "",
+    args: z.object({
+        query: z.string().describe("The query to search Metabase for")
+    }),
+    handler: async (ctx, { query }) => {
+        return "Metabase MCP Tool";
+    }
+});
+
 
 export const steveDefaultTools = {
     searchCompanyKnowledge,
@@ -213,6 +223,10 @@ export const steveDefaultTools = {
     searchRoleGuidance,
     getMyConfiguration
 };
+
+export const junoDefaultTools = {
+
+}
 
 export const atlasDefaultTools = {
 }
