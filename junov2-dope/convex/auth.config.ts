@@ -1,9 +1,8 @@
 export default {
-  providers: [
-    {
-      domain: "http://localhost:3000",
-      applicationID: "convex",
-    },
-  ],
-};
-
+    providers: [
+      {
+        domain: process.env.CONVEX_SITE_URL,
+        applicationID: "convex",
+      },
+    ],
+  };

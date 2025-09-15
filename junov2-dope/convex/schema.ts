@@ -4,6 +4,21 @@ import { v } from "convex/values";
 
 const schema = defineSchema({
   ...authTables,
+  // Override auth users table to add custom fields
+  users: defineTable({
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    // Custom fields
+    role: v.optional(v.string()),
+    organization: v.optional(v.string()),
+  })
+    .index("email", ["email"]) 
+    .index("phone", ["phone"]),
   agents: defineTable({
     name: v.string(),
     description: v.string(),
@@ -39,6 +54,7 @@ const schema = defineSchema({
     employeeId: v.string(), // e.g., "E-ORP-0001"
     name: v.string(),
     position: v.optional(v.string()), // Job title/position
+    organization: v.optional(v.string()), // Organization
     reportsTo: v.optional(v.string()), // Manager/supervisor
     gender: v.optional(v.string()), // Gender identity
     assessmentDate: v.string(), // ISO date string

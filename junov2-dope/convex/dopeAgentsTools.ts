@@ -149,7 +149,7 @@ export const searchRoleGuidance = createTool({
                     limit: 3,
                     vectorScoreThreshold: 0.5
                 },
-                prompt: `You are Steve, a friendly AI assistant for DOPE Marketing. The user is asking about guidance for the ${role} role regarding ${topic}.
+                prompt: `You are a friendly AI assistant for DOPE Marketing. The user is asking about guidance for the ${role} role regarding ${topic}.
 
 Based on any role-specific information you have, provide helpful, conversational advice. Be warm and supportive.
 
@@ -229,4 +229,6 @@ export const junoDefaultTools = {
 }
 
 export const atlasDefaultTools = {
+    searchCompanyKnowledge,
+    searchEmployeeProfiles,
 }

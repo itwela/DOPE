@@ -67,7 +67,7 @@ interface AgentContextType {
     inputMessage: string;
     setInputMessage: (message: string) => void;
     isLoading: boolean;
-    handleSendMessage: () => Promise<void>;
+    handleSendMessage: (userSelectedTool?: string) => Promise<void>;
     isEditModalOpen: boolean;
     setIsEditModalOpen: (isOpen: boolean) => void;
     editingAgent: Agent | null;
@@ -102,6 +102,8 @@ export default function AgentProvider({ children }: AgentProviderProps) {
     const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
 
     const getDefaultAgents = useMutation(api.myFunctions.getDefaultAgents);
+    const currentUserInfo = useQuery(api.auth.currentUser, {});
+    const authedUserId = currentUserInfo?.subject ? currentUserInfo.subject.split("|")[0] : undefined;
     const createSteveThread = useAction(api.dopeAgents.createSteveThread);
     const createJunoThread = useAction(api.dopeAgents.createJunoThread);
     const createAtlasThread = useAction(api.dopeAgents.createAtlasThread);
@@ -244,10 +246,13 @@ export default function AgentProvider({ children }: AgentProviderProps) {
         setIsEditModalOpen(false);
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (userSelectedTool?: string) => {
         if (!inputMessage.trim() || isLoading) return;
 
         const userMessage = inputMessage.trim();
+        const userMessageWithTool = userSelectedTool
+            ? `${userMessage}\n\n(Notice: The user specifically requested using the '${userSelectedTool}' tool for this request.)`
+            : userMessage;
         setInputMessage("");
         setIsLoading(true);
 
@@ -259,17 +264,17 @@ export default function AgentProvider({ children }: AgentProviderProps) {
                     if (currentAgent.name === "Steve") {
                         newThreadResult = await createSteveThread({
                             title: `Chat with ${currentAgent.name}`,
-                            userId: "user-1" // Placeholder - in real app, get from auth
+                            userId: authedUserId || "guest"
                         });
                     } else if (currentAgent.name === "Juno") {
                         newThreadResult = await createJunoThread({
                             title: `Creative Session with ${currentAgent.name}`,
-                            userId: "user-1" // Placeholder - in real app, get from auth
+                            userId: authedUserId || "guest"
                         });
                     } else if (currentAgent.name === "Atlas") {
                         newThreadResult = await createAtlasThread({
                             title: `Business Intelligence with ${currentAgent.name}`,
-                            userId: "user-1" // Placeholder - in real app, get from auth
+                            userId: authedUserId || "guest"
                         });
                     }
 
@@ -284,8 +289,8 @@ export default function AgentProvider({ children }: AgentProviderProps) {
                         // Send message to the new thread
                         sendMessage({
                             threadId: newThreadResult.threadId,
-                            prompt: userMessage,
-                            userId: "user-1", // Placeholder - in real app, get from auth
+                            prompt: userMessageWithTool,
+                            userId: authedUserId || "guest",
                             agentName: currentAgent.name
                         });
                     }
@@ -293,8 +298,8 @@ export default function AgentProvider({ children }: AgentProviderProps) {
                     // Use existing thread for AI agents with valid thread IDs
                     sendMessage({
                         threadId,
-                        prompt: userMessage,
-                        userId: "user-1", // Placeholder - in real app, get from auth
+                        prompt: userMessageWithTool,
+                        userId: authedUserId || "guest",
                         agentName: currentAgent.name
                     });
                 }
@@ -327,7 +332,7 @@ export default function AgentProvider({ children }: AgentProviderProps) {
             // Call the Convex API to delete the thread
             await deleteThread({
                 threadId: threadIdToDelete,
-                userId: "user-1" // Placeholder - in real app, get from auth
+                userId: authedUserId || "guest"
             });
             
             // If this was the current thread, reset to welcome screen

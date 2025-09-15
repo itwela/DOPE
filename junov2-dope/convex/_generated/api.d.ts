@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as CustomProfile from "../CustomProfile.js";
 import type * as auth from "../auth.js";
 import type * as dopeAgents from "../dopeAgents.js";
 import type * as dopeAgentsTools from "../dopeAgentsTools.js";
@@ -31,6 +32,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  CustomProfile: typeof CustomProfile;
   auth: typeof auth;
   dopeAgents: typeof dopeAgents;
   dopeAgentsTools: typeof dopeAgentsTools;

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "DOPE Agent Playground",
   description: "Build and deploy your custom AI agents",
   icons: {
-    icon: "/convex.svg",
+    icon: "/dopelogo.svg",
   },
 };
 

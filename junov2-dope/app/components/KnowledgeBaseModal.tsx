@@ -76,7 +76,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
     setIsFormatting(false);
     setFormatError(null);
     onClose();
-    console.log('tt debug', textTitle)
+    console.log('tt debug length', textTitle.length)
   };
 
   const handleBackToList = () => {
@@ -214,7 +214,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
   };
 
   const lightIcon = (
-    <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <svg className="w-5 h-5 text-[#EB1416]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
     </svg>
   );
@@ -313,13 +313,13 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => setMode('add-text')}
-            className="flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg transition-colors text-sm font-medium"
+            className="flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-[#EB1416] text-white rounded-lg hover:bg-[#d41013] transition-colors text-sm font-medium"
           >
             {textIcon}
             Add Text
           </button>
 
-          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium cursor-pointer">
+          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-[#EB1416] text-white rounded-lg hover:bg-[#d41013] transition-colors text-sm font-medium cursor-pointer">
             {uploadIcon}
             Upload File
             <input
@@ -333,7 +333,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
 
           <button
             onClick={() => { setTranscriptObjectForKb(null); setTranscriptContent(""); setIsFormatting(false); setFormatError(null); setMode('add-transcript'); }}
-            className="flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-lg transition-colors text-sm font-medium"
+            className="flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-[#EB1416] text-white rounded-lg hover:bg-[#d41013] transition-colors text-sm font-medium"
           >
             {transcriptIcon}
             Add Transcript
@@ -441,7 +441,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
         <button
           onClick={handleCreateTextEntry}
           disabled={!textContent.trim()}
-          className="px-4 py-2 bg-accent cursor-pointer text-white hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed rounded-lg transition-colors"
+          className="px-4 py-2 bg-[#EB1416] cursor-pointer text-white hover:bg-[#d41013] disabled:bg-[#EB1416]/40 disabled:cursor-not-allowed rounded-lg transition-colors"
         >
           Create Entry
         </button>
@@ -469,7 +469,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
           {transcriptObjectForKb === null ? (
             isFormatting ? (
               <div className="flex flex-col items-center gap-3 text-gray-600">
-                <div className="w-10 h-10 border-4 border-gray-200 border-t-accent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-gray-200 border-t-[#EB1416] rounded-full animate-spin" />
                 <div className="text-sm">Formatting transcript...</div>
               </div>
             ) : (
@@ -477,7 +477,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
                 <button
                   onClick={handleFormatTranscript}
                   disabled={!transcriptContent.trim()}
-                  className="px-4 py-2 cursor-pointer bg-accent text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors text-sm"
+                  className="px-4 py-2 cursor-pointer bg-[#EB1416] text-white rounded-lg hover:bg-[#d41013] disabled:bg-[#EB1416]/40 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   Format transcript
                 </button>
@@ -507,7 +507,7 @@ export default function KnowledgeBaseModal({ agent, isOpen, onClose }: Knowledge
 
         <button
           onClick={() => handleCreateTranscriptEntry()}
-          className="px-4 cursor-pointer py-2 bg-accent text-white hover:bg-green-700 rounded-lg transition-colors"
+          className="px-4 cursor-pointer py-2 bg-[#EB1416] text-white hover:bg-[#d41013] rounded-lg transition-colors"
         >
           Add To Knowledge Base - No RAG
         </button>

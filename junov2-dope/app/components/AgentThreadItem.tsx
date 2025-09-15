@@ -9,8 +9,8 @@ export const AgentThreadItem = ({ agent, thread, currentThreadId, onSelectThread
     return (
       <>
         <div className={`flex items-center justify-between rounded-md px-2 py-1 transition-colors ${isThreadSelected
-            ? 'bg-accent text-white'
-            : 'hover:text-white hover:bg-accent'
+            ? 'bg-[#EB1416] text-white'
+            : 'hover:text-white hover:bg-[#EB1416]'
           }`}>
           <div
             onClick={(e) => {

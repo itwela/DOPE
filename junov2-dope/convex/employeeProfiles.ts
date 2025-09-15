@@ -36,6 +36,7 @@ export const createEmployeeProfile = mutation({
         employeeId: data.employee_id,
         name: data.name,
         position: data.position || undefined,
+        organization: data.organization || undefined,
         reportsTo: data.reports_to || undefined,
         gender: data.gender || undefined,
         assessmentDate: data.assessment_date || "",
@@ -84,6 +85,7 @@ export const getAllEmployeeProfiles = query({
     employeeId: v.string(),
     name: v.string(),
     position: v.optional(v.string()),
+    organization: v.optional(v.string()),
     reportsTo: v.optional(v.string()),
     gender: v.optional(v.string()),
     assessmentDate: v.string(),
@@ -134,6 +136,7 @@ export const getEmployeeProfile = query({
       employeeId: v.string(),
       name: v.string(),
       position: v.optional(v.string()),
+      organization: v.optional(v.string()),
       reportsTo: v.optional(v.string()),
       gender: v.optional(v.string()),
       assessmentDate: v.string(),
@@ -216,6 +219,7 @@ export const updateEmployeeProfile = mutation({
         employeeId: data.employee_id,
         name: data.name,
         position: data.position || undefined,
+        organization: data.organization || undefined,
         reportsTo: data.reports_to || undefined,
         gender: data.gender || undefined,
         assessmentDate: data.assessment_date || "",
@@ -277,6 +281,8 @@ export const addEmployeeToRAG = internalAction({
 Employee ID: ${profile.employeeId}
 Assessment Date: ${profile.assessmentDate}
 Lead Domain: ${profile.leadDomain}${profile.position ? `\nPosition: ${profile.position}` : ''}${profile.reportsTo ? `\nReports To: ${profile.reportsTo}` : ''}${profile.gender ? `\nGender: ${profile.gender}` : ''}
+
+ORGANIZATION: ${profile.organization}
 
 TOP 10 STRENGTHS:
 ${profile.all34.map((strength: string, index: number) => `${index + 1}. ${strength}`).join('\n')}
@@ -360,6 +366,7 @@ export const getEmployeeProfileInternal = internalQuery({
       employeeId: v.string(),
       name: v.string(),
       position: v.optional(v.string()),
+      organization: v.optional(v.string()),
       reportsTo: v.optional(v.string()),
       gender: v.optional(v.string()),
       assessmentDate: v.string(),
@@ -441,7 +448,10 @@ Employee ID: ${profile.employeeId}
 Assessment Date: ${profile.assessmentDate}
 Lead Domain: ${profile.leadDomain}${profile.position ? `\nPosition: ${profile.position}` : ''}${profile.reportsTo ? `\nReports To: ${profile.reportsTo}` : ''}${profile.gender ? `\nGender: ${profile.gender}` : ''}
 
+ORGANIZATION: ${profile.organization}
+
 TOP ALL 34 STRENGTHS:
+
 ${profile.all34.map((strength: string, index: number) => `${index + 1}. ${strength}`).join('\n')}
 
 HOW TO COACH:
@@ -483,6 +493,7 @@ Document: ${profile.sourceDocUrl}`;
         employeeName: profile.name,
         leadDomain: profile.leadDomain,
         position: profile.position || "",
+        organization: profile.organization || "",
         reportsTo: profile.reportsTo || "",
         gender: profile.gender || "",
         sourceProfileId: profile._id,

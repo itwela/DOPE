@@ -162,3 +162,47 @@ Think of it as a casual chat where you want to really understand their world.`,
 //     // We'll implement this in the WebsiteAnalysisButton component instead
 //     throw new Error("This function should not be called directly from server actions");
 // }
+
+/**
+ * Transcribe an audio file using OpenAI Whisper.
+ *
+ * Accepts either a File (from a form upload) or a URL string pointing to the audio file.
+ * Returns the transcribed text.
+ */
+export const transcribeAudioWhisper = async (
+    audio: File | string,
+    options?: { language?: string; prompt?: string }
+) => {
+    try {
+        let fileToTranscribe: File;
+
+        if (typeof audio === "string") {
+            const response = await fetch(audio);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch audio from URL: ${response.status} ${response.statusText}`);
+            }
+            const blob = await response.blob();
+            // Give the file a best-effort name and use the server-provided content-type
+            const fileName = (new URL(audio)).pathname.split("/").pop() || "audio";
+            const contentType = response.headers.get("content-type") || blob.type || "application/octet-stream";
+            fileToTranscribe = new File([blob], fileName, { type: contentType });
+        } else {
+            fileToTranscribe = audio;
+        }
+
+        const transcription = await openai.audio.transcriptions.create({
+            model: "whisper-1",
+            file: fileToTranscribe,
+            // Optional tuning inputs to Whisper
+            language: options?.language,
+            prompt: options?.prompt,
+        });
+
+        console.log("Transcription:", transcription.text);
+
+        return transcription.text || "";
+    } catch (error) {
+        console.error("Error transcribing audio with Whisper:", error);
+        throw new Error(`Failed to transcribe audio: ${error}`);
+    }
+};

@@ -21,7 +21,7 @@ export const AgentCard = ({ agent, currentAgent, onSelect, onEdit, onOpenKnowled
         className={`p-4 rounded-lg border-2 transition-all relative group ${isDisabled
             ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
             : isSelected
-              ? 'border-accent bg-accent/5 cursor-pointer'
+              ? 'border-[#EB1416] bg-[#EB1416]/5 cursor-pointer'
               : 'border-gray-200 hover:border-gray-300 cursor-pointer'
           }`}
       >
@@ -36,7 +36,7 @@ export const AgentCard = ({ agent, currentAgent, onSelect, onEdit, onOpenKnowled
             disabled={isDisabled}
           >
             <svg
-              className={`w-4 h-4 ${isDisabled ? 'text-gray-400' : 'text-accent hover:text-purple-700'}`}
+              className={`w-4 h-4 ${isDisabled ? 'text-gray-400' : 'text-[#EB1416] hover:text-purple-700'}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -86,7 +86,7 @@ export const AgentCard = ({ agent, currentAgent, onSelect, onEdit, onOpenKnowled
             <h3 className="font-medium text-gray-900 flex items-center gap-2">
               {agent.name}
               {threadCount > 0 && (
-                <div className="bg-accent font-bold text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center font-medium">
+                <div className="bg-[#EB1416] font-bold text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] h-5 flex items-center justify-center font-medium">
                   {threadCount}
                 </div>
               )}
@@ -108,7 +108,7 @@ export const AgentCard = ({ agent, currentAgent, onSelect, onEdit, onOpenKnowled
                   e.stopPropagation();
                   startNewThread();
                 }}
-                className="text-xs cursor-pointer bg-accent hover:bg-accent-hover text-white px-2 py-1 rounded font-medium transition-colors flex items-center gap-1"
+                className="text-xs cursor-pointer bg-[#EB1416] hover:bg-[#EB1416] text-white px-2 py-1 rounded font-medium transition-colors flex items-center gap-1"
                 title="Start new conversation"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
